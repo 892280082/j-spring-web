@@ -90,11 +90,8 @@ class MappingDelegate {
 		//controller bean 定义的注解
 		const paramDefine = methodDefine.getAnnotation('Param')
 
-		if(!paramDefine)
-			return;
-
 		this.paramDefineList = methodDefine.params.map(name => {
-			const type =  paramDefine.param[name] || 'notSet';
+			const type = paramDefine && paramDefine.param[name] ? paramDefine.param[name] : 'notSet';
 			return {name,type};
 		})
 
@@ -110,7 +107,6 @@ class MappingDelegate {
 				switch(name){
 					case 'request':return req;
 					case 'response':return res;
-					case 'session':return session;
 					case 'session':return session;
 					default:
 						return req.query[name];

@@ -84,6 +84,22 @@ class TestApiService {
 
 	}
 
+	async testParamNoForce(){
+
+		const log = this.log.method("testParamNoForce");
+
+		const url = "http://localhost:3000/test/testParamNoForce?param1=hahahaha";
+
+		log.info("请求url:",url);
+
+		try{
+			const data = await this.doRequest({url,method:"GET"})
+		}catch(e){
+			log.error("catch exception:",e)
+		}
+
+	}
+
 	//测试controller action 的异常处理机制
 	async testExceptionHander(){
 		const log = this.log.method("testExceptionHander");

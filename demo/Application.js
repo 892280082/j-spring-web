@@ -19,6 +19,8 @@ class Application {
 
 		await this.testApiService.testMustTakeParam();
 
+		await this.testApiService.testParamNoForce();
+
 		await this.testApiService.testExceptionHander();
 
 	}
@@ -70,6 +72,11 @@ class TestController {
 	//@Param(param1=query)
 	async testParam(param1){
 		return `param1:${param1}`;
+	}
+
+	//@Get
+	async testParamNoForce(param1){
+		return `testParamNoForce param1:${param1}`;
 	}
 
 	//@Get
