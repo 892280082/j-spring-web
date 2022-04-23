@@ -14,20 +14,20 @@ class SpringMvc {
 
 	server;
 
-	//@Value(value=spring-mvc.port,force=false)
+	//@Value(value=Spring-ioc-mvc.port,force=false)
 	port=3000;
 
 	//@Autowired
 	springFactory;
 
-	//@Value(value=spring-mvc.views,force=false)
+	//@Value(value=Spring-ioc-mvc.views,force=false)
 	springMvcView = 'views';
 
-	//@Value(value=spring-mvc.public,force=false)
+	//@Value(value=Spring-ioc-mvc.public,force=false)
 	springMvcPublic = 'public';
 
 
-	//@Value(value=spring-mvc.morganLogLevel,force=false)
+	//@Value(value=Spring-ioc-mvc.morganLogLevel,force=false)
 	morganLogLevel = 'dev';
 
 	log;
