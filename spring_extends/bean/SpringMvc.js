@@ -23,7 +23,7 @@ class SpringMvc {
 	//@Value(value=spring-mvc.views,force=false)
 	springMvcView = 'views';
 
-	//@Value(value=spring-mvc.views,force=false)
+	//@Value(value=spring-mvc.public,force=false)
 	springMvcPublic = 'public';
 
 
@@ -69,24 +69,34 @@ class SpringMvc {
 	//启动web服务
 	startWebServer(){
 
-		const log = this.log.method("startWebServer")
+		return new Promise((resolve,reject) => {
 
+			const log = this.log.method("startWebServer")
 
-		const {app,port} = this;
-		app.set('port', port);
-		this.server = http.createServer(app);
+			const {app,port} = this;
+			app.set('port', port);
+			this.server = http.createServer(app);
 
-		const {server} = this;
+			const {server} = this;
 
-		server.listen(port);
-		server.on('error', e=> console.log(e) );
-		server.on('listening', ()=>{
-			  var addr = server.address();
-			  var bind = typeof addr === 'string'
-			    ? 'pipe ' + addr
-			    : 'port ' + addr.port;
-			log.info('Listening on ' + bind);
-		});
+			server.listen(port);
+			server.on('error', e=> {
+				log.error("spring-ioc-mvc start error!")
+				log.error(e)
+				reject(e);
+			});
+			server.on('listening', ()=>{
+				  var addr = server.address();
+				  var bind = typeof addr === 'string'
+				    ? 'pipe ' + addr
+				    : 'port ' + addr.port;
+
+				resolve();
+				log.info('Listening on ' + bind);
+			});
+
+		})
+
 	}
 
 	//加载映射
@@ -142,7 +152,7 @@ class SpringMvc {
 		// });
 
 		//3.启动服务器
-		this.startWebServer();
+		await this.startWebServer();
 	}
 
 

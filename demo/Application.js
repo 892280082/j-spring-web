@@ -5,9 +5,19 @@ class Application {
 	//@Autowired
 	springMvc;
 
+	//@Autowired
+	testApiService;
+
+
 	async main(){
 
-		this.springMvc.start();
+		await this.springMvc.start();
+
+		await this.testApiService.testIndex();
+
+		await this.testApiService.testResful();
+
+		await this.testApiService.testMustTakeParam();
 
 	}
 
@@ -17,12 +27,17 @@ class Application {
 //@Json
 class IndexController {
 
+
+	log;
+
 	/**
-		request url: http://localhost:3000
+		request url: http://localhost:3000?param1=aa
 	*/
 	//@Get(/)
-	async index(request,response){
-		return {msg:"welcome use spring-ioc-mvc"};
+	//@Param
+	async index(request,response,param1){
+		this.log.method("index").info({request:!!request,response:!!response,param1})
+		return {msg:`welcome use spring-ioc-mvc,the query param1:${param1}`};
 	}
 
 }
@@ -45,10 +60,15 @@ class TestController {
 	*/
 	//@Get(/name/:content)
 	//@Param(content=path)
-	async name(content){
-		return `Hello => ${content}`;
+	async name(content,param1){
+		return `Hello => ${content},and param1:${param1}`;
 	}
 
+	//@Get
+	//@Param(param1=query)
+	async testParam(param1){
+		return `param1:${param1}`;
+	}
 }
 
  module.exports = { Application,TestController,IndexController }

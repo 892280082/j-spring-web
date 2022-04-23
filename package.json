@@ -12,7 +12,9 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "request": "^2.88.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
