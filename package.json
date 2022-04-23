@@ -1,6 +1,6 @@
 {
   "name": "spring-ioc-mvc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "spring_extends/index.js",
   "dependencies": {
