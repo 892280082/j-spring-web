@@ -84,7 +84,7 @@ class TestApiService {
 
 	}
 
-
+	//测试controller action 的异常处理机制
 	async testExceptionHander(){
 		const log = this.log.method("testExceptionHander");
 
