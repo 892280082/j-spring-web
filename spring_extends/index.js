@@ -1,8 +1,8 @@
 const path = require("path")
-const {SpringMvc} = require("./bean/SpringMvc")
+const {SpringIocMvc} = require("./bean/SpringIocMvc")
 
 //包加载器
-const SpringMvcScaner =  (packageName='spring-ioc-mvc')=> {
+const SpringIocMvcScaner =  (packageName='spring-ioc-mvc')=> {
 	return [
 			{
 				packageName,
@@ -12,6 +12,6 @@ const SpringMvcScaner =  (packageName='spring-ioc-mvc')=> {
 };
 
 module.exports = {
-	SpringMvcScaner,
-	SpringMvc
+	SpringIocMvcScaner,
+	SpringIocMvc
 }

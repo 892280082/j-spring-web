@@ -76,8 +76,27 @@ class TestApiService {
 
 		log.info("请求url:",url);
 
-		const data = await this.doRequest({url,method:"GET"})
+		try{
+			const data = await this.doRequest({url,method:"GET"})
+		}catch(e){
+			log.error("catch exception:",e)
+		}
 
+	}
+
+
+	async testExceptionHander(){
+		const log = this.log.method("testExceptionHander");
+
+		const url = "http://localhost:3000/test/testException";
+
+		log.info("请求url:",url);
+
+		try{
+			const data = await this.doRequest({url,method:"GET"})
+		}catch(e){
+			log.error("catch exception:",e)
+		}
 	}
 
 }

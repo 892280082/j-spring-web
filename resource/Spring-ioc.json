@@ -1,6 +1,6 @@
 {
 	"log":{
 		"state":"on",
-		"level":"debug"
+		"level":"trace"
 	}
 }

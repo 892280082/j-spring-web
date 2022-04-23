@@ -1,4 +1,5 @@
 const path = require('path');
+const {fastLog} = require('Spring-ioc')
 
 class MappingDelegate {
 
@@ -14,11 +15,15 @@ class MappingDelegate {
 	//参数定义
 	paramDefineList=[];
 
-	constructor(beanDefine,controllerBean,methodDefine){
+	//mvc容器
+	mvc;
+
+	constructor(mvc,beanDefine,controllerBean,methodDefine){
 
 		this.beanDefine = beanDefine;
 		this.controllerBean = controllerBean;
 		this.methodDefine = methodDefine;
+		this.mvc = mvc;
 
 		this._resolveInovkeType();
 		this._resloveMapping();
@@ -69,11 +74,11 @@ class MappingDelegate {
 		const {beanDefine,methodDefine} = this;
 
 		if(beanDefine.hasAnnotation("Json") || methodDefine.hasAnnotation("Json")){
-			this.responseType = 'Json';
+			this.responseType = 'JSON';
 			return;
 		}
 
-		this.responseType = "Html";
+		this.responseType = "HTML";
 
 	}
 
@@ -135,15 +140,41 @@ class MappingDelegate {
 
 	//对外暴漏的调用方法
 	async invoke(req, res, next){
-		const {controllerBean,methodDefine,beanDefine,responseType} = this;
-		const refectParam = this.getReflectParam(req,res);
-		const result = await controllerBean[methodDefine.name].apply(controllerBean,refectParam);
+		
+		const {controllerBean,methodDefine,beanDefine,responseType,mvc} = this;
+
+		let refectParam,result = null;
+
+		try{
+			//计算反射参数
+			refectParam = this.getReflectParam(req,res);
+		}catch(e){
+			res.status(400);
+			res.json({error:e})
+			return;
+		}
+
+		try{
+
+			//业务处理
+			result = await controllerBean[methodDefine.name].apply(controllerBean,refectParam);
+
+		}catch(e){
+
+			fastLog("MappingDelegate => invoke","error",e);
+
+			mvc.springIocMvcExceptionHander[responseType.toLowerCase()](e,req,res);
+
+			return;
+		}
+		
 		switch(responseType){
-			case 'Json':res.json(result);break;
-			case 'Html':res.render(result.page,result.data);break;
+			case 'JSON':res.json(result);break;
+			case 'HTML':res.render(result.page,result.data);break;
 			default:
 				throw `responseType[${responseType}]错误，没有匹配的处理方法`
 		}
+
 	}
 
 	//对暴漏的方法进行作用域绑定
@@ -153,11 +184,11 @@ class MappingDelegate {
 	}
 
 	//批量解析该方法
-	static analysisController(bean,beanDefine){
+	static analysisController(mvc,bean,beanDefine){
 
 		const mappingList = beanDefine.methods.filter(methodDefine => {
 			return methodDefine.hasAnnotation("Mapping") || methodDefine.hasAnnotation("Get") || methodDefine.hasAnnotation("Post")
-		}).map(methodDefine => new MappingDelegate(beanDefine,bean,methodDefine))
+		}).map(methodDefine => new MappingDelegate(mvc,beanDefine,bean,methodDefine))
 
 		return mappingList;
 

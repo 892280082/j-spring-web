@@ -3,7 +3,7 @@
 class Application {
 
 	//@Autowired
-	springMvc;
+	springIocMvc;
 
 	//@Autowired
 	testApiService;
@@ -11,13 +11,15 @@ class Application {
 
 	async main(){
 
-		await this.springMvc.start();
+		await this.springIocMvc.start();
 
 		await this.testApiService.testIndex();
 
 		await this.testApiService.testResful();
 
 		await this.testApiService.testMustTakeParam();
+
+		await this.testApiService.testExceptionHander();
 
 	}
 
@@ -69,6 +71,32 @@ class TestController {
 	async testParam(param1){
 		return `param1:${param1}`;
 	}
+
+	//@Get
+	async testException(){
+		return a+b;
+	}
+
 }
 
- module.exports = { Application,TestController,IndexController }
+/**
+	全局异常捕获
+*/
+//@Bean(springIocMvcExceptionHander)
+class SpringIocMvcExceptionHander {
+
+	log;
+
+	html(error,req,res){
+		this.log.method("html").error(error);
+		res.status(500).json({error:error.message || e});
+	}
+
+	json(error,req,res){
+		this.log.method("json").error(error);
+		res.status(500).json({error:error.message || e});
+	}
+
+}
+
+ module.exports = { Application,TestController,IndexController,SpringIocMvcExceptionHander}

@@ -8,7 +8,7 @@ const {MappingDelegate} = require("../MappingDelegate")
 
 
 //@Bean
-class SpringMvc {
+class SpringIocMvc {
 
 	app;
 
@@ -27,8 +27,19 @@ class SpringMvc {
 	springMvcPublic = 'public';
 
 
-	//@Value(value=Spring-ioc-mvc.morganLogLevel,force=false)
-	morganLogLevel = 'dev';
+	//@Value(value=Spring-ioc.pattern,force=false)
+	pattern = 'dev';
+
+
+	//@Autowired(value=springIocMvcExceptionHander,force=false)
+	springIocMvcExceptionHander = {
+		json:(error,req,res)=>{
+			res.status(500).json({error:error.message || e});
+		},
+		html:(error,req,res)=>{
+			res.status(500).json({error:error.message || e});
+		}
+	};
 
 	log;
 
@@ -52,18 +63,19 @@ class SpringMvc {
 		log.trace({staticPath})
 		log.trace({viewPath})
 		log.trace({"view engine":"ejs"})
-		log.trace({"morganLogLevel":this.morganLogLevel})
+		log.trace({"morganLogLevel":this.pattern})
 
 		app.set('views', viewPath);
 		app.set('view engine', 'ejs');
 
 
-		app.use(logger(this.morganLogLevel));
+		app.use(logger(this.pattern));
 		app.use(express.json());
 		app.use(express.urlencoded({ extended: false }));
 		app.use(cookieParser());
 
 		app.use(express.static(staticPath));
+
 	}
 
 	//启动web服务
@@ -112,7 +124,7 @@ class SpringMvc {
 
 			log.trace(`analysisController Bean:${define.name} ,Annotation:${annotations}`);
 
-			MappingDelegate.analysisController(controllerBean,define).forEach(delegateBean => {
+			MappingDelegate.analysisController(this,controllerBean,define).forEach(delegateBean => {
 
 				const {invokeType,mapping} = delegateBean;
 
@@ -147,10 +159,6 @@ class SpringMvc {
 		//3.加载映射
 		this.loadMapping(controllerBeanList);
 
-		// this.app.get('/', function(req, res, next) {
-		//   res.json({msg:"hello"})
-		// });
-
 		//3.启动服务器
 		await this.startWebServer();
 	}
@@ -161,4 +169,4 @@ class SpringMvc {
 
 }
 
-module.exports = {SpringMvc}
+module.exports = {SpringIocMvc}
