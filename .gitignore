@@ -116,3 +116,5 @@ dist
 .pnp.*
 
 testCopy/
+
+.runtemp.js
