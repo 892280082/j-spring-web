@@ -67,7 +67,14 @@ class MappingDelegate {
 	//解析返回类型
 	_resloveResponseType(){
 		const {beanDefine,methodDefine} = this;
-		this.responseType = beanDefine.hasAnnotation("Json") || methodDefine.hasAnnotation("Json") ? 'json' : 'html';
+
+		if(beanDefine.hasAnnotation("Json") || methodDefine.hasAnnotation("Json")){
+			this.responseType = 'Json';
+			return;
+		}
+
+		this.responseType = "Html";
+
 	}
 
 
@@ -132,8 +139,8 @@ class MappingDelegate {
 		const refectParam = this.getReflectParam(req,res);
 		const result = await controllerBean[methodDefine.name].apply(controllerBean,refectParam);
 		switch(responseType){
-			case 'json':res.json(result);break;
-			case 'html':res.render(result.page,result.data);break;
+			case 'Json':res.json(result);break;
+			case 'Html':res.render(result.page,result.data);break;
 			default:
 				throw `responseType[${responseType}]错误，没有匹配的处理方法`
 		}
