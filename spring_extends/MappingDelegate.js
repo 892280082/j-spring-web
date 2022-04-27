@@ -1,5 +1,5 @@
 const path = require('path');
-const {fastLog} = require('Spring-ioc')
+const {fastLog} = require('spring-ioc')
 
 class MappingDelegate {
 
