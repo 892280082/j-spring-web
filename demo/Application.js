@@ -92,7 +92,7 @@ class PageController {
 
 	//@Get
 	async index(request,response){
-		return ['index',{msg:'hello'}];
+		return ['index',{msg:'hello world!'}];
 	}
 
 }

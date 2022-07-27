@@ -24,7 +24,7 @@ class SpringIocMvc {
 	springMvcView = 'views';
 
 	//@Value(value=Spring-ioc-mvc.public,force=false)
-	springMvcPublic = 'public';
+	springMvcPublic = '/public';
 
 	//@Value(value=Spring-ioc-mvc.viewEngine,force=false)
 	viewEngine = 'art';
@@ -60,8 +60,19 @@ class SpringIocMvc {
 		this.args = this.springFactory.args;
 	}
 
+
+	loadStaticAssert(){
+		const {app,args} = this;
+		const log = this.log.method("loadStaticAssert")
+		const {springMvcPublic} = this;
+		const staticPath = path.join(args.rootPath,springMvcPublic)
+		log.trace({staticPath:`${springMvcPublic} => ${staticPath}`})
+		app.use(springMvcPublic,express.static(staticPath));
+	}
+
 	//加载模板引擎
-	loadViewEngine(app){
+	loadViewEngine(){
+		const {app,args} = this;
 		const log = this.log.method("loadViewEngine")
 		const {viewEngine} =this;
 		log.trace({"view engine":viewEngine})
@@ -75,6 +86,11 @@ class SpringIocMvc {
 			default:
 				throw `not support view engine :${viewEngine}`
 		}
+
+		//设置模板路径
+		const viewPath = path.join(args.rootPath, this.springMvcView);
+		log.trace({viewPath})
+		app.set('views', viewPath);
 	}
 
 	//装配app
@@ -87,19 +103,14 @@ class SpringIocMvc {
 		const {app,args} = this;
 		// view engine setup
 
-		const staticPath = path.join(args.rootPath, this.springMvcPublic)
-		const viewPath = path.join(args.rootPath, this.springMvcView);
-	
+		//静态页面
+		this.loadStaticAssert(app);
 
-		log.trace({staticPath})
-		log.trace({viewPath})
-	
-		log.trace({"morganLogLevel":this.pattern})
-
-		app.set('views', viewPath);
-	
 		//加载模板引擎
 		this.loadViewEngine(app);
+	
+		//日志级别
+		log.trace({"morganLogLevel":this.pattern})
 
 		//扩展app配置
 		this.springMvcAppExtends.loadApp(app);
@@ -109,7 +120,7 @@ class SpringIocMvc {
 		app.use(express.urlencoded({ extended: false }));
 		app.use(cookieParser());
 
-		app.use(express.static(staticPath));
+	
 
 	}
 
