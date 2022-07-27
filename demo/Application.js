@@ -13,15 +13,15 @@ class Application {
 
 		await this.springIocMvc.start();
 
-		await this.testApiService.testIndex();
+		// await this.testApiService.testIndex();
 
-		await this.testApiService.testResful();
+		// await this.testApiService.testResful();
 
-		await this.testApiService.testMustTakeParam();
+		// await this.testApiService.testMustTakeParam();
 
-		await this.testApiService.testParamNoForce();
+		// await this.testApiService.testParamNoForce();
 
-		await this.testApiService.testExceptionHander();
+		// await this.testApiService.testExceptionHander();
 
 	}
 
@@ -86,6 +86,18 @@ class TestController {
 
 }
 
+
+//@Controller(page)
+class PageController {
+
+	//@Get
+	async index(request,response){
+		return ['index',{msg:'hello'}];
+	}
+
+}
+
+
 /**
 	全局异常捕获
 */
@@ -106,4 +118,4 @@ class SpringIocMvcExceptionHander {
 
 }
 
- module.exports = { Application,TestController,IndexController,SpringIocMvcExceptionHander}
+ module.exports = { Application,TestController,IndexController,PageController,SpringIocMvcExceptionHander}

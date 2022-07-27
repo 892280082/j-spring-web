@@ -166,7 +166,9 @@ class MappingDelegate {
 		
 		switch(responseType){
 			case 'JSON':res.json(result);break;
-			case 'HTML':res.render(result.page,result.data);break;
+			case 'HTML':
+				const [page,data] = result;
+				res.render(page,data);break;
 			default:
 				throw `responseType[${responseType}]错误，没有匹配的处理方法`
 		}

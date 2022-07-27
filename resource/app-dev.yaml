@@ -1,0 +1,7 @@
+Spring-ioc:
+  log:
+    state: on
+    level: trace
+Spring-ioc-mvc:
+  port: 3000
+  viewEngine: art

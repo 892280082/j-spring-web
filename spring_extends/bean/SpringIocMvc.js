@@ -26,10 +26,23 @@ class SpringIocMvc {
 	//@Value(value=Spring-ioc-mvc.public,force=false)
 	springMvcPublic = 'public';
 
+	//@Value(value=Spring-ioc-mvc.viewEngine,force=false)
+	viewEngine = 'art';
 
 	//@Value(value=Spring-ioc.pattern,force=false)
 	pattern = 'dev';
 
+
+	/**
+		客户端可以实现这个类 进行app配置的覆盖
+	*/
+	//@Autowired(value=SpringMvcAppExtends,force=false)
+	springMvcAppExtends = {
+		log:null,
+		loadApp:app => {
+			this.log.trace('use default extends instance [SpringMvcAppExtends].')
+		}
+	}
 
 	//@Autowired(value=springIocMvcExceptionHander,force=false)
 	springIocMvcExceptionHander = {
@@ -47,6 +60,23 @@ class SpringIocMvc {
 		this.args = this.springFactory.args;
 	}
 
+	//加载模板引擎
+	loadViewEngine(app){
+		const log = this.log.method("loadViewEngine")
+		const {viewEngine} =this;
+		log.trace({"view engine":viewEngine})
+		app.set('view engine',viewEngine);
+
+		switch(viewEngine){
+			case 'ejs':break;
+			case 'art':
+				app.engine('art', require('express-art-template'))
+				break;
+			default:
+				throw `not support view engine :${viewEngine}`
+		}
+	}
+
 	//装配app
 	loadApp(){
 
@@ -59,15 +89,20 @@ class SpringIocMvc {
 
 		const staticPath = path.join(args.rootPath, this.springMvcPublic)
 		const viewPath = path.join(args.rootPath, this.springMvcView);
+	
 
 		log.trace({staticPath})
 		log.trace({viewPath})
-		log.trace({"view engine":"ejs"})
+	
 		log.trace({"morganLogLevel":this.pattern})
 
 		app.set('views', viewPath);
-		app.set('view engine', 'ejs');
+	
+		//加载模板引擎
+		this.loadViewEngine(app);
 
+		//扩展app配置
+		this.springMvcAppExtends.loadApp(app);
 
 		app.use(logger(this.pattern));
 		app.use(express.json());
