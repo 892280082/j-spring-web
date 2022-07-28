@@ -1,6 +1,8 @@
 const path = require('path');
 const {fastLog} = require('spring-ioc')
 
+
+
 class MappingDelegate {
 
 	//映射路径
@@ -52,12 +54,18 @@ class MappingDelegate {
 
 	//解析映射
 	_resloveMapping(){
+
+		//首字母小写
+		function lowerCaseFirstLetter(string) {
+		  return string.charAt(0).toLowerCase() + string.slice(1);
+		}
+
 		const {beanDefine,controllerBean,methodDefine} = this;
 
 		const controllerBeanAnnotation = beanDefine.getAnnotation("Controller")
 
 		//控制器的映射
-		const controllerBeanMapping = controllerBeanAnnotation.param.value || "";
+		const controllerBeanMapping = controllerBeanAnnotation.param.value || lowerCaseFirstLetter(beanDefine.name);
 
 		//方法的映射
 		const methodDefineMappingAnnotation = methodDefine.getAnnotation("Mapping") || methodDefine.getAnnotation("Get") || methodDefine.getAnnotation("Post");
@@ -87,29 +95,42 @@ class MappingDelegate {
 	_resolveMethodParams(){
 		const {beanDefine, methodDefine} = this;
 
-		//controller bean 定义的注解
 		const paramDefine = methodDefine.getAnnotation('Param')
+		const isAllowNull = methodDefine.hasAnnotation('ParamNull')
 
 		this.paramDefineList = methodDefine.params.map(name => {
-			const type = paramDefine && paramDefine.param[name] ? paramDefine.param[name] : 'notSet';
-			return {name,type};
+
+			const type = paramDefine && paramDefine.param[name] ? paramDefine.param[name] : '__NotSet__';
+			return {name,type,isAllowNull};
 		})
 
 	}
 
+
+
 	//获取反射的 
 	getReflectParam(req,res){
+
 		return this.paramDefineList.map(p => {
 
-			const {name,type} = p;
+			const {name,type,isAllowNull} = p;
 
-			if(type==='notSet'){
+			if(type==='__NotSet__'){
 				switch(name){
-					case 'request':return req;
-					case 'response':return res;
-					case 'session':return session;
+					case 'req':return req;
+					case 'res':return res;
+					case 'session':return req.session;
 					default:
-						return req.query[name];
+						let v = req.query[name] || req.params[name];
+						//如果参数不存在 并且以$开头 会尝试从session中获取
+						if(!v && name.indexOf('$') === 0){
+							v = req.session[name];
+						}
+
+						//如果值不存在 并且没有设置允许为Null 则报错
+						if(v === undefined && !isAllowNull)
+							throw `paramter [${name}] can not be empty!`
+						return v;
 				}
 			}
 

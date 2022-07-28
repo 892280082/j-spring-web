@@ -23,8 +23,8 @@ class SpringIocMvc {
 	//@Value(value=Spring-ioc-mvc.views,force=false)
 	springMvcView = 'views';
 
-	//@Value(value=Spring-ioc-mvc.public,force=false)
-	springMvcPublic = '/public';
+	//@Value(value=Spring-ioc-mvc.static,force=false)
+	springMvcAssertStaticPath = '/static';
 
 	//@Value(value=Spring-ioc-mvc.viewEngine,force=false)
 	viewEngine = 'art';
@@ -32,17 +32,6 @@ class SpringIocMvc {
 	//@Value(value=Spring-ioc.pattern,force=false)
 	pattern = 'dev';
 
-
-	/**
-		客户端可以实现这个类 进行app配置的覆盖
-	*/
-	//@Autowired(value=SpringMvcAppExtends,force=false)
-	springMvcAppExtends = {
-		log:null,
-		loadApp:app => {
-			this.log.trace('use default extends instance [SpringMvcAppExtends].')
-		}
-	}
 
 	//@Autowired(value=springIocMvcExceptionHander,force=false)
 	springIocMvcExceptionHander = {
@@ -64,10 +53,10 @@ class SpringIocMvc {
 	loadStaticAssert(){
 		const {app,args} = this;
 		const log = this.log.method("loadStaticAssert")
-		const {springMvcPublic} = this;
-		const staticPath = path.join(args.rootPath,springMvcPublic)
-		log.trace({staticPath:`${springMvcPublic} => ${staticPath}`})
-		app.use(springMvcPublic,express.static(staticPath));
+		const {springMvcAssertStaticPath} = this;
+		const staticPath = path.join(args.rootPath,springMvcAssertStaticPath)
+		log.trace({staticPath:`${springMvcAssertStaticPath} => ${staticPath}`})
+		app.use(springMvcAssertStaticPath,express.static(staticPath));
 	}
 
 	//加载模板引擎
@@ -93,8 +82,23 @@ class SpringIocMvc {
 		app.set('views', viewPath);
 	}
 
+	//扩展配置
+	async extendExpressConfig(){
+
+		const {app,args,springFactory} = this;
+
+		const log = this.log.method("extendExpressConfig")
+
+
+		const configExtendBeans = await springFactory.getBeanByAnnotation("SpringMvcAppExtend");
+
+		for(let i=0;i<configExtendBeans.length;i++){
+			await configExtendBeans[i].loadApp(app);
+		}
+	}
+
 	//装配app
-	loadApp(){
+	async loadApp(){
 
 		const log = this.log.method("loadApp")
 
@@ -103,17 +107,17 @@ class SpringIocMvc {
 		const {app,args} = this;
 		// view engine setup
 
-		//静态页面
-		this.loadStaticAssert(app);
+		//静态资源配置
+		this.loadStaticAssert();
 
 		//加载模板引擎
-		this.loadViewEngine(app);
+		this.loadViewEngine();
 	
 		//日志级别
 		log.trace({"morganLogLevel":this.pattern})
 
 		//扩展app配置
-		this.springMvcAppExtends.loadApp(app);
+		await this.extendExpressConfig();
 
 		app.use(logger(this.pattern));
 		app.use(express.json());
@@ -200,7 +204,7 @@ class SpringIocMvc {
 		log.trace(`find controller bean size:${controllerBeanList.length}`)
 
 		//2.装载app
-		this.loadApp();
+		await this.loadApp();
 
 		//3.加载映射
 		this.loadMapping(controllerBeanList);

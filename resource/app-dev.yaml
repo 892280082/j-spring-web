@@ -1,7 +1,13 @@
 Spring-ioc:
   log:
     state: on
-    level: trace
+    level: info
 Spring-ioc-mvc:
   port: 3000
   viewEngine: art
+  views: views
+  static: /static
+  session:
+    isUse: true
+    secret: '234234'
+    maxAge: 60000

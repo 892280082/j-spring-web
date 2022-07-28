@@ -1,0 +1,1 @@
+console.log("load static assert success!");

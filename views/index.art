@@ -1,8 +1,46 @@
 <html>
 	<head>
 	</head>
+	<style type="text/css">
+		.mid { text-align: left; margin-left: 30px; }
+		.top1 {font-size: 20px;font-weight: bold;}
+		.test-container {
+
+		}
+	</style>
 	<body>
-		<h1>{{ msg }}</h1>
+		<h1 class="mid">{{ msg }}</h1>
+
+
+		<div>
+			<div>
+				<p class="top1">测试1:测试session允许是否正常</p>
+			</div>
+			<hr>
+			<div class="test-container">
+				
+				<div>
+					<input type="text" name="addInfoInput"> 
+					<button onclick="addSessioon();">添加session信息</button>
+					<button onclick="cleanSessioon();">清空</button>
+				</div>
+				<ul>
+
+					{{each $sessionList }}
+
+					<li>{{ $index+1 }}.{{ $value }}  <button onclick="removeSession(<%= $index %>);">删除</button></li>
+
+					{{/each}}
+				</ul>
+
+			</div>
+		</div>
+
+
+
+
+
 	</body>
-	<script type="text/javascript" src="/public/index.js"></script>
+	<script type="text/javascript" src="/static/jquery.js"></script>
+	<script type="text/javascript" src="/static/session.js"></script>
 </html>
