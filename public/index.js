@@ -1,1 +1,0 @@
-alert("load static assert success!");
