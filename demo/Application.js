@@ -33,7 +33,7 @@ class SpringMvcAppExtendBean1 {
 }
 
 /**
-	全局异常捕获
+	springmvc-全局异常捕获
 */
 //@Bean(springIocMvcExceptionHander)
 class SpringIocMvcExceptionHander {
