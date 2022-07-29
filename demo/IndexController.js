@@ -8,6 +8,11 @@ class IndexController {
 
 	log;
 
+	//@Value(Spring-ioc-mvc.port)
+	port;
+
+	//@Autowired
+	apiTestService;
 
 	/**
 		路由：/
@@ -20,29 +25,15 @@ class IndexController {
 
 		const $sessionList = $session.getOr('$sessionList',[])
 
-		return ['index',{msg:'hello world!',$sessionList}]
+		const requestPrefix = `http://localhost:${this.port}`;
+
+		const {apiTestData} = this.apiTestService;
+
+		return ['index',{msg:'hello world!',$sessionList,requestPrefix,apiTestData}]
 	}
 
 }
 
-/**
-	全局异常捕获
-*/
-//@Bean(springIocMvcExceptionHander)
-class SpringIocMvcExceptionHander {
 
-	log;
 
-	html(error,req,res){
-		this.log.method("html").error(error);
-		res.status(500).json({error:error.message || e});
-	}
-
-	json(error,req,res){
-		this.log.method("json").error(error);
-		res.status(500).json({error:error.message || e});
-	}
-
-}
-
-module.exports = { IndexController,SpringIocMvcExceptionHander}
+module.exports = { IndexController}

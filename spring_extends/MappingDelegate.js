@@ -1,9 +1,15 @@
 const path = require('path');
 const {fastLog} = require('spring-ioc')
 
+//封装基础session
 class WrapSession {
 	constructor(session){
 		this.session = session;
+	}
+	get(key){
+		const v = this.session[key]
+		if(!v)
+			throw `session key [${key}] not exist`
 	}
 	getOr(key,defaultValue){
 		if(this.session[key])
@@ -17,6 +23,53 @@ class WrapSession {
 	set(key,value){
 		this.session[key] = value;
 	}
+}
+
+
+/**
+	聚合map 
+	const dataMap = {
+		'stu.info.type':'xiaoban',
+		'stu.info.class':'demaxiya',
+		'stu.name':"zhansan",
+		'stu.age':12
+	}
+	{
+	  info: { type: 'xiaoban', class: 'demaxiya' },
+	  name: 'zhansan',
+	  age: 12
+	}
+*/
+const doAggregation = (dataMap,prefix) => {
+
+	let data = {};
+
+	const addAttr = (d,keys,value) => {
+		for(let i=0;i<keys.length;i++){
+			const key = keys[i];
+			if(i === keys.length-1){
+				d[key] = value;
+				break;
+			}
+			if(d[key]){
+				d = d[key];
+			}else{
+				d[key] = {};
+				d = d[key];
+			}
+
+		}
+	}
+
+	for(let p in dataMap){
+
+		if(p.indexOf(prefix) === 0){
+			addAttr(data,p.replace(prefix,"").split('.'),dataMap[p])
+		}
+
+	}
+
+	return data;
 }
 
 class MappingDelegate {
@@ -109,11 +162,17 @@ class MappingDelegate {
 
 	//解析方法上的参数
 	_resolveMethodParams(){
+
 		const {beanDefine, methodDefine} = this;
 
+		//参数手动定义
 		const paramDefine = methodDefine.getAnnotation('Param')
 
+		//允许空值
 		const isAllowNullStr = methodDefine.hasAnnotation('Null') ? (methodDefine.getAnnotation('Null').param.value || '') : '';
+
+		//是否聚合
+		const isAggregationStr = methodDefine.hasAnnotation('Aggregation') ? (methodDefine.getAnnotation('Aggregation').param.value || '') : '';
 
 		this.paramDefineList = methodDefine.params.map(name => {
 
@@ -121,8 +180,11 @@ class MappingDelegate {
 
 			const isAllowNull = isAllowNullStr.split(',').indexOf(name) > -1;
 
-			return {name,type,isAllowNull};
+			const isAggregation = isAggregationStr.split(',').indexOf(name) > -1;
+
+			return {name,type,isAllowNull,isAggregation};
 		})
+
 	}
 
 
@@ -132,7 +194,9 @@ class MappingDelegate {
 
 		return this.paramDefineList.map(p => {
 
-			const {name,type,isAllowNull} = p;
+			let v;
+			const {name,type,isAllowNull,isAggregation} = p;
+
 
 			if(type==='__NotSet__'){
 				switch(name){
@@ -141,7 +205,12 @@ class MappingDelegate {
 					case 'session':return req.session;
 					case '$session':return new WrapSession(req.session);
 					default:
-						let v = req.query[name] || req.params[name];
+
+						if(isAggregation){
+							return doAggregation(req.params,name+'.')
+						}
+
+						v = req.query[name] || req.params[name];
 						//如果参数不存在 并且以$开头 会尝试从session中获取
 						if(!v && name.indexOf('$') === 0){
 							v = req.session[name];
@@ -153,8 +222,7 @@ class MappingDelegate {
 						return v;
 				}
 			}
-
-			let v;
+			
 			switch(type){
 				case "path": v=req.params[name]; break;
 				case "query":v=req.query[name];break;

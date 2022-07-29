@@ -3,9 +3,10 @@ const SESSION_LIST = '$sessionList';
 
 /**
 
-	session 的api操作
+	处理session操作的 api
 
 */
+
 
 
 //@Controller
