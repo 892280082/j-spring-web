@@ -14,11 +14,9 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "spring-ioc": "1.3.6"
+    "spring-ioc": "^1.3.6"
   },
-  "devDependencies": {
-    "request": "^2.88.2"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

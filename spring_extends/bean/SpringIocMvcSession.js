@@ -10,7 +10,7 @@ class SpringIocMvcSession {
 	secret="keyboard cat";
 
 	//@Value(value=Spring-ioc-mvc.session.maxAge,force=false)
-	maxAge= 7 * 24 * 60 * 60 * 1000; //1 week
+	maxAge= 60 * 60 * 1000; //1 hour
 
 	log;
 
