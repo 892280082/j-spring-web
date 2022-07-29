@@ -11,19 +11,14 @@ class IndexController {
 
 	/**
 		路由：/
-		参数：req,res,session 均可以自动注入
+		参数：req,res,session,$session 均可以自动注入 
+			 $session 代表的是包裹的session，提供的额外的api
 	*/
 
 	//@Get(/)
-	async index(req,res,session){
+	async index(req,res,session,$session){
 
-		const {$sessionList=[]} = session;
-
-
-		//const $sessionList = $session.$getOr('$sessionList',[])
-
-		//注册sessino
-		session['$sessionList'] = $sessionList;
+		const $sessionList = $session.getOr('$sessionList',[])
 
 		return ['index',{msg:'hello world!',$sessionList}]
 	}

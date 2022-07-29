@@ -1,7 +1,23 @@
 const path = require('path');
 const {fastLog} = require('spring-ioc')
 
-
+class WrapSession {
+	constructor(session){
+		this.session = session;
+	}
+	getOr(key,defaultValue){
+		if(this.session[key])
+			return this.session[key];
+		this.session[key] = defaultValue;
+		return this.session[key];
+	}
+	destory(key){
+		this.session[key] = undefined;
+	}
+	set(key,value){
+		this.session[key] = value;
+	}
+}
 
 class MappingDelegate {
 
@@ -96,14 +112,17 @@ class MappingDelegate {
 		const {beanDefine, methodDefine} = this;
 
 		const paramDefine = methodDefine.getAnnotation('Param')
-		const isAllowNull = methodDefine.hasAnnotation('ParamNull')
+
+		const isAllowNullStr = methodDefine.hasAnnotation('Null') ? (methodDefine.getAnnotation('Null').param.value || '') : '';
 
 		this.paramDefineList = methodDefine.params.map(name => {
 
 			const type = paramDefine && paramDefine.param[name] ? paramDefine.param[name] : '__NotSet__';
+
+			const isAllowNull = isAllowNullStr.split(',').indexOf(name) > -1;
+
 			return {name,type,isAllowNull};
 		})
-
 	}
 
 
@@ -120,6 +139,7 @@ class MappingDelegate {
 					case 'req':return req;
 					case 'res':return res;
 					case 'session':return req.session;
+					case '$session':return new WrapSession(req.session);
 					default:
 						let v = req.query[name] || req.params[name];
 						//如果参数不存在 并且以$开头 会尝试从session中获取

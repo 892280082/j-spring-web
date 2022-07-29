@@ -1,5 +1,7 @@
-const {SpringBoot} = require("spring-ioc")
-const {SpringIocMvcScaner} = require("./spring_extends")
+const {app} = require('./app')
 
-new SpringBoot({srcList:["./demo"],moduleList:[SpringIocMvcScaner("./spring_extends")]}).start();
+//只编译，然后手动运行.runtemp.js
+//app.build();
 
+//编译+自动运行.runtemp.js
+app.start();

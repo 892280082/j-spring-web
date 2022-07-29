@@ -1,13 +1,20 @@
 
 const SESSION_LIST = '$sessionList';
 
+/**
+
+	session 的api操作
+
+*/
+
+
 //@Controller
 class SessionApi {
 
 
 	/**
 		路由: /sessionApi/addSessionInfo?value=?
-		$sessionList 带有$开头的参数会尝试从session中获取,如果不存在则报错.
+		$sessionList 带有$开头的参数会尝试从session中获取,不存在则报错.
 	*/
 
 	//@Post
@@ -18,13 +25,13 @@ class SessionApi {
 	}
 
 	/**
-		清空SESSION_LIST 
+		销毁session "$sessionList"
 	*/
 
 	//@Post
 	//@Json
-	async cleanSessioon(session){
-		session[SESSION_LIST] = [];
+	async cleanSessioon($session){
+		$session.destory(SESSION_LIST)
 		return "SUCCESS"
 	}
 
