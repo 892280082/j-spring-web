@@ -5,6 +5,12 @@ const SESSION_LIST = '$sessionList';
 
 	处理session操作的 api
 
+	@Controller
+	class SessionApi
+	等同于
+	@Controller(sessionApi)
+	class SessionApi
+
 */
 
 
