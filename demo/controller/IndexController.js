@@ -34,6 +34,41 @@ class IndexController {
 
 }
 
+/**
+	springmvc-全局异常捕获
+*/
+//@Bean(springIocMvcExceptionHander)
+class SpringIocMvcExceptionHander {
+
+	log;
+
+	html(error,req,res){
+		this.log.method("html").error(error);
+		res.status(500).json({error:error.message || e});
+	}
+
+	json(error,req,res){
+		this.log.method("json").error(error);
+		res.status(500).json({error:error.message || e});
+	}
+
+}
 
 
-module.exports = { IndexController}
+/**
+	扩展express
+*/
+
+//@SpringMvcAppExtend
+class SpringMvcAppExtendBean1 {
+
+	log;
+
+	async loadApp(app){
+		 this.log.method('loadApp').debug("可以使用@SpringMvcAppExtend扩展express,可以存在多个！");
+	}
+
+}
+
+
+module.exports = { IndexController,SpringIocMvcExceptionHander,SpringMvcAppExtendBean1}

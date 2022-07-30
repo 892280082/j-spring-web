@@ -19,6 +19,24 @@ const SESSION_LIST = '$sessionList';
 class SessionApi {
 
 
+
+	log;
+
+
+	/**
+		拦截整个controller的请求，通过true 拒绝false。其它操作例如重定向 请使用res操作。
+	*/
+
+	//@Filter(/sessionApi)
+	async filterNoSessionRequest(req,res){
+
+		this.log.method('filterNoSessionRequest').info('=> 拦截了/sessionApi请求');
+
+		return req.session[SESSION_LIST] !== undefined;
+	}
+
+
+
 	/**
 		路由: /sessionApi/addSessionInfo?value=?
 		$sessionList 带有$开头的参数会尝试从session中获取,不存在则报错.

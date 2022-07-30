@@ -301,6 +301,35 @@ class MappingDelegate {
 
 	}
 
+
+	static analysisControllerFilterAnnotatin(mvc,controllerBean,beanDefine){
+
+		const filerMethod = beanDefine.methods.filter(m => m.hasAnnotation('Filter'))
+
+		filerMethod.forEach(m => {
+
+			const annotation = m.getAnnotation('Filter');
+
+			//拦截路径
+			const filterPath = annotation.param.value;
+
+			if(!filterPath){
+				throw `controller:${controllerBean.name} method:${m.name} filter path can not be empty!`
+			}
+
+			const path = filterPath.replace(/~/g,'*');
+
+			mvc.app.use(path,async (req,res,next) => {
+
+				const  result = await controllerBean[m.name].apply(controllerBean,[req,res]);
+
+				result && next();
+
+			})
+
+		})
+	}
+
 }
 
 

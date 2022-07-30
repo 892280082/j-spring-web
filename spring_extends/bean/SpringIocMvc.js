@@ -174,6 +174,10 @@ class SpringIocMvc {
 
 			log.trace(`analysisController Bean:${define.name} ,Annotation:${annotations}`);
 
+
+			MappingDelegate.analysisControllerFilterAnnotatin(this,controllerBean,define);
+			
+
 			MappingDelegate.analysisController(this,controllerBean,define).forEach(delegateBean => {
 
 				const {invokeType,mapping} = delegateBean;
@@ -183,6 +187,8 @@ class SpringIocMvc {
 				this.app[invokeType](mapping,delegateBean.getMappingMethod())
 
 			})
+
+
 
 		})
 	}
