@@ -45,6 +45,17 @@ class IndexController {
 		...
 	}
 
+	/**
+		路由：/paramTest/*?a=?
+		参数：a,b自动从路径中获取。
+	*/
+
+	//@Get(/paramTest/:a/)
+	//@Json
+	async paramTest(a,b){
+		...
+	}
+
 }
 
 ````
