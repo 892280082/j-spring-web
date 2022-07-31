@@ -63,14 +63,6 @@
 		</div>
 
 
-		<div>
-			<div>
-				<p class="top1">测试3：页面跳转</p>
-			</div>
-			<hr>
-
-		</div>
-
 	</body>
 	<script type="text/javascript" src="/static/jquery.js"></script>
 	<script type="text/javascript" src="/static/session.js"></script>

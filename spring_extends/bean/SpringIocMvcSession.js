@@ -3,8 +3,8 @@
 //@SpringMvcAppExtend
 class SpringIocMvcSession {
 
-	//@Value(value=Spring-ioc-mvc.session.isUse,force=false)
-	isUse=true;
+	//@Value(value=Spring-ioc-mvc.session.state,force=false)
+	state= 'on';
 
 	//@Value(value=Spring-ioc-mvc.session.secret,force=false)
 	secret="keyboard cat";
@@ -16,9 +16,9 @@ class SpringIocMvcSession {
 
 	loadApp(app){
 
-		const {log,isUse,secret,maxAge} = this;
+		const {log,state,secret,maxAge} = this;
 
-		if(isUse){
+		if(state === 'on'){
 
 			log.method('loadApp').debug('@SpringMvcAppExtend: use default sqliteDB session!')
 

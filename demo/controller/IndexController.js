@@ -39,20 +39,19 @@ class IndexController {
 
 /**
 	springmvc-全局异常捕获
+	默认就是这么处理的，可以删除。
 */
-//@Bean(springIocMvcExceptionHander2)
+//@Bean(springIocMvcExceptionHander)
 class SpringIocMvcExceptionHander {
 
 	log;
 
-	html(error,req,res){
-		this.log.method("html").error(error);
-		res.status(500).json({error:error.message || e});
+	error_404 = (req,res)=>{
+			res.status(404).send('404 PATH NOT FIND')
 	}
 
-	json(error,req,res){
-		this.log.method("json").error(error);
-		res.status(500).json({error:error.message || e});
+	error_500 = (req,res,{error}) => {
+			res.status(500).json({error});
 	}
 
 }
