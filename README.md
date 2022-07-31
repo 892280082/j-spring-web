@@ -1,8 +1,8 @@
 # spring-mvc
 
 #### 介绍
-- 1.原生js实现了运行时拿到注解
-- 2.高度还原java的SpringMvc
+- 1.原生js实现了注解和java的Spring框架( [spring-ioc](https://gitee.com/woaianqi/spring-ioc) )
+- 2.高度还原java的SpringMvc框架
 - 3.可以直接注入Npm包到Spring容器
 
 ```js
@@ -52,7 +52,7 @@ class IndexController {
 #### 运行
 ```shell
 	npm install && node index.js 
-	#打开浏览器 localhost:3000
+	#打开浏览器 http://localhost:3000
 ```
 
 #### 文档
