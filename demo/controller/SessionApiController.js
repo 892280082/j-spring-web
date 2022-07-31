@@ -1,4 +1,3 @@
-
 const SESSION_LIST = '$sessionList';
 
 /**
@@ -15,16 +14,16 @@ const SESSION_LIST = '$sessionList';
 
 
 
-//@Controller
-class SessionApi {
-
+//@Controller(sessionApi)
+class SessionApiController {
 
 
 	log;
 
 
 	/**
-		拦截整个controller的请求，通过true 拒绝false。其它操作例如重定向 请使用res操作。
+		拦截整个controller的请求，通过true 拒绝false。
+		其它操作例如重定向 请使用res操作。
 	*/
 
 	//@Filter(/sessionApi)
@@ -32,7 +31,13 @@ class SessionApi {
 
 		this.log.method('filterNoSessionRequest').info('=> 拦截了/sessionApi请求');
 
-		return req.session[SESSION_LIST] !== undefined;
+		const state = Array.isArray(req.session[SESSION_LIST]) ;
+
+		if(state){
+			req.session['$FilterUrl'] = req.url;
+		}
+
+		return true;
 	}
 
 
@@ -74,4 +79,4 @@ class SessionApi {
 
 }
 
-module.exports = {SessionApi}
+module.exports = {SessionApiController}

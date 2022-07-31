@@ -25,6 +25,25 @@ class ApiTestService {
 			}
 		},
 		{
+			index:1051,
+			title:'500错误处理',
+			api:'/apiTest/test500ErrorHander',
+			type:'get',
+			status:500,
+			verify:({a,b})=>{
+				return a=== '1' && b ==='2'
+			}
+		},
+		{
+			index:1052,
+			title:'404错误处理',
+			api:'/apiTest/test404ErrorHander',
+			type:'get',
+			status:404,
+			verify:()=>{
+			}
+		},
+		{
 			index:107,
 			title:'url传值测试:测试允许缺省传参b',
 			api:'/apiTest/queryParamTest2?a=1',
@@ -61,18 +80,30 @@ class ApiTestService {
 			type:'get',
 			status:200,
 			verify:(pojo)=>{
-				return Object.keys(pojo).length == 2 
-					&& pojo.name  === 'zhangsan' 
-					&& pojo.age === '12' 
-					&& pojo.info.school === '68zhong'
-					&& pojo.info.class === '9-1'
+				return pojo.name  === 'zhangsan' && pojo.age === '12' && pojo.info.school === '68zhong' && pojo.info.class === '9-1'
+				? '数据校验正确':'数据校验失败'
 			}
+		},
+		{
+			index:130,
+			title:'redirect临时重定向',
+			api:'/apiTest/testRedirect',
+			type:'get',
+			status:200
+		},
+		{
+			index:140,
+			title:'location永久重定向',
+			api:'/apiTest/testLocation',
+			type:'get',
+			status:200
 		}
+		
 	]
 
 	//测试接口得到的结果是否正确
 	doVerify(index,data){
-		return this.apiTestData.find(d => d.index === +index).verify(data) ? 'SUCCESS':'FAILb';
+		return this.apiTestData.find(d => d.index === +index).verify(data) ? 'SUCCESS':'FAIL';
 	}
 
 }

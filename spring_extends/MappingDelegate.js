@@ -207,7 +207,7 @@ class MappingDelegate {
 					default:
 
 						if(isAggregation){
-							return doAggregation(req.params,name+'.')
+							return doAggregation(req.query,name+'.')
 						}
 
 						v = req.query[name] || req.params[name];
@@ -250,6 +250,10 @@ class MappingDelegate {
 
 		let refectParam,result = null;
 
+		const doHanderError = error => {
+			mvc.springIocMvcExceptionHander['error_500'](req,res,{requestType:responseType.toLowerCase(),error});
+		}
+
 		try{
 			//计算反射参数
 			refectParam = this.getReflectParam(req,res);
@@ -264,11 +268,11 @@ class MappingDelegate {
 			//业务处理
 			result = await controllerBean[methodDefine.name].apply(controllerBean,refectParam);
 
-		}catch(e){
+		}catch(error){
 
-			fastLog("MappingDelegate => invoke","error",e);
+			fastLog("MappingDelegate => invoke","error",error);
 
-			mvc.springIocMvcExceptionHander[responseType.toLowerCase()](e,req,res);
+			doHanderError(error);
 
 			return;
 		}
@@ -276,8 +280,28 @@ class MappingDelegate {
 		switch(responseType){
 			case 'JSON':res.json(result);break;
 			case 'HTML':
-				const [page,data] = result;
-				res.render(page,data);break;
+				if(Array.isArray(result)){
+					const [page,data] = result;
+					const mixData = {...data,...( mvc.injectView &&  req.session ? req.session : {})}
+					res.render(page,mixData);
+				}else if(typeof result === 'string'){
+
+					if(result.indexOf('redirect:') === 0){
+						res.redirect(result.replace('redirect:',''))
+						return;
+					}
+					if(result.indexOf('location:') === 0){
+						res.redirect(result.replace('location:',''))
+						return;
+					}
+
+					doHanderError('return opt error')
+
+				}else{
+					doHanderError('return value error;')
+				}
+
+				break;
 			default:
 				throw `responseType[${responseType}]错误，没有匹配的处理方法`
 		}
@@ -302,9 +326,10 @@ class MappingDelegate {
 	}
 
 
-	static analysisControllerFilterAnnotatin(mvc,controllerBean,beanDefine){
+	static  analysisControllerFilterAnnotatin(log,mvc,controllerBean,beanDefine){
 
 		const filerMethod = beanDefine.methods.filter(m => m.hasAnnotation('Filter'))
+
 
 		filerMethod.forEach(m => {
 
@@ -319,6 +344,8 @@ class MappingDelegate {
 
 			const path = filterPath.replace(/~/g,'*');
 
+			log.trace(`request filter => ${path}`)
+
 			mvc.app.use(path,async (req,res,next) => {
 
 				const  result = await controllerBean[m.name].apply(controllerBean,[req,res]);
@@ -328,6 +355,7 @@ class MappingDelegate {
 			})
 
 		})
+
 	}
 
 }

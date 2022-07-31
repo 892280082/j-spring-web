@@ -35,6 +35,9 @@
 				</ul>
 
 			</div>
+			<div>
+				<p>被拦截的请求:{{ $FilterUrl }}</p>
+			<div>
 		</div>
 
 		<div>
@@ -63,14 +66,6 @@
 		<div>
 			<div>
 				<p class="top1">测试3：页面跳转</p>
-			</div>
-			<hr>
-
-		</div>
-
-		<div>
-			<div>
-				<p class="top1">测试4：拦截器</p>
 			</div>
 			<hr>
 

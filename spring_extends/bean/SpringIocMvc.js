@@ -29,17 +29,20 @@ class SpringIocMvc {
 	//@Value(value=Spring-ioc-mvc.viewEngine,force=false)
 	viewEngine = 'art';
 
+	//@Value(value=Spring-ioc-mvc.session.injectView,force=false)
+	injectView = true;
+
 	//@Value(value=Spring-ioc.pattern,force=false)
 	pattern = 'dev';
 
 
 	//@Autowired(value=springIocMvcExceptionHander,force=false)
 	springIocMvcExceptionHander = {
-		json:(error,req,res)=>{
-			res.status(500).json({error:error.message || e});
+		error_404:(req,res)=>{
+			res.status(404).send('404 PATH NOT FIND')
 		},
-		html:(error,req,res)=>{
-			res.status(500).json({error:error.message || e});
+		error_500:(req,res,{error}) => {
+			res.status(500).json({error});
 		}
 	};
 
@@ -174,13 +177,21 @@ class SpringIocMvc {
 
 			log.trace(`analysisController Bean:${define.name} ,Annotation:${annotations}`);
 
+			//添加拦截器
+			MappingDelegate.analysisControllerFilterAnnotatin(log,this,controllerBean,define);
 
-			MappingDelegate.analysisControllerFilterAnnotatin(this,controllerBean,define);
-			
+			//获取映射委托处理对象集合
+			const mappingControllerList = MappingDelegate.analysisController(this,controllerBean,define);
 
-			MappingDelegate.analysisController(this,controllerBean,define).forEach(delegateBean => {
+			const allMaping = mappingControllerList.map(v => v.mapping);
+
+			mappingControllerList.forEach(delegateBean => {
 
 				const {invokeType,mapping} = delegateBean;
+
+				if(allMaping.filter(m => m === mapping).length > 1){
+					throw `mapping repeat:${mapping}`
+				}
 
 				log.trace(`request mapping:${invokeType} => ${mapping}`)
 
@@ -188,9 +199,14 @@ class SpringIocMvc {
 
 			})
 
-
-
 		})
+
+
+		// 最后添加404处理
+		this.app.use((req,res)=>{
+			this.springIocMvcExceptionHander.error_404(req,res)
+		})
+
 	}
 
 	async start(){

@@ -23,13 +23,16 @@ class IndexController {
 	//@Get(/)
 	async index(req,res,session,$session){
 
-		const $sessionList = $session.getOr('$sessionList',[])
+		//如果不存在 则创建
+		$session.getOr('$sessionList',[])
 
 		const requestPrefix = `http://localhost:${this.port}`;
 
 		const {apiTestData} = this.apiTestService;
 
-		return ['index',{msg:'hello world!',$sessionList,requestPrefix,apiTestData}]
+		//页面el会自动从session中取之，优先级低于用户传值
+
+		return ['index',{msg:'hello world!',requestPrefix,apiTestData}]
 	}
 
 }
@@ -37,7 +40,7 @@ class IndexController {
 /**
 	springmvc-全局异常捕获
 */
-//@Bean(springIocMvcExceptionHander)
+//@Bean(springIocMvcExceptionHander2)
 class SpringIocMvcExceptionHander {
 
 	log;

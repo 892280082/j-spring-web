@@ -4,7 +4,7 @@
 **/
 
 //@Controller(apiTest)
-class ApiTestController {
+class TestApiController {
 
 	//@Autowired
 	apiTestService;
@@ -14,6 +14,13 @@ class ApiTestController {
 	async queryParamTest(a,b){
 		return this.apiTestService.doVerify(100,{a,b})
 	}
+
+	//@Get
+	//@Json
+	async test500ErrorHander(){
+		return a+b;
+	}
+
 
 	//@Get
 	//@Json
@@ -42,6 +49,34 @@ class ApiTestController {
 		return this.apiTestService.doVerify(120,stu)
 	}
 
+
+	//临时重定向
+	//@Get
+	async testRedirect(res){
+		return 'redirect:/apiTest/beTestRedirect'
+	}
+
+	//被重定向
+	//@Get
+	//@Json
+	async beTestRedirect(res){
+		return '我被临时重定向了'
+	}
+
+
+	//永久重定向
+	//@Get
+	async testLocation(res){
+		return 'location:/apiTest/beTestLocation'
+	}
+
+	//被永久重定向
+	//@Get
+	//@Json
+	async beTestLocation(res){
+		return '我被永久重定向了哦'
+	}
+
 }
 
-module.exports = {ApiTestController}
+module.exports = {TestApiController}
