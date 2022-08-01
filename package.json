@@ -1,10 +1,11 @@
 {
   "name": "spring-ioc-mvc",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "description": "",
   "main": "spring_extends/index.js",
   "dependencies": {
     "art-template": "^4.13.2",
+    "body-parser": "^1.20.0",
     "connect-sqlite3": "^0.9.13",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

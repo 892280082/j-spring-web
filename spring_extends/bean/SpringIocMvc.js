@@ -2,6 +2,7 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser')
 const logger = require('morgan');
 const http = require('http');
 const {MappingDelegate} = require("../MappingDelegate")
@@ -108,7 +109,9 @@ class SpringIocMvc {
 		this.app = express();
 
 		const {app,args} = this;
-		// view engine setup
+
+		//解析body
+		this.app.use(bodyParser.urlencoded({ extended: false }))
 
 		//静态资源配置
 		this.loadStaticAssert();
