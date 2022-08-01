@@ -37,7 +37,7 @@ class SessionApiController {
 			req.session['$FilterUrl'] = req.url;
 		}
 
-		return true;
+		return state;
 	}
 
 
