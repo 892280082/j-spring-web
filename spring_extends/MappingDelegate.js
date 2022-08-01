@@ -276,7 +276,13 @@ class MappingDelegate {
 
 			return;
 		}
-		
+
+		//无结果 则不进行任何操作
+		if(result === undefined){
+			return;
+		}
+
+
 		switch(responseType){
 			case 'JSON':res.json(result);break;
 			case 'HTML':
