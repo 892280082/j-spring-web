@@ -210,7 +210,7 @@ class MappingDelegate {
 							return doAggregation(req.query,name+'.')
 						}
 
-						v = req.query[name] || req.params[name];
+						v = req.query[name] || req.params[name] || req.body[name];
 						//如果参数不存在 并且以$开头 会尝试从session中获取
 						if(!v && name.indexOf('$') === 0){
 							v = req.session[name];

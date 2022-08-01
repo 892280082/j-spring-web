@@ -97,8 +97,17 @@ class ApiTestService {
 			api:'/apiTest/testLocation',
 			type:'get',
 			status:200
+		},
+		{
+			index:150,
+			title:'post请求',
+			api:'/apiTest/testPostRequest?a=hellow&b=aabbcc',
+			type:'post',
+			status:200,
+			verify:({a,b})=>{
+				return a=== 'hellow' && b ==='aabbcc'
+			}
 		}
-		
 	]
 
 	//测试接口得到的结果是否正确

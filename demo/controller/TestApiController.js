@@ -77,6 +77,13 @@ class TestApiController {
 		return '我被永久重定向了哦'
 	}
 
+
+	//@Post
+	//@Json
+	async testPostRequest(a,b){
+		return this.apiTestService.doVerify(150,{a,b})
+	}
+
 }
 
 module.exports = {TestApiController}
