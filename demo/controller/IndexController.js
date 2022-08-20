@@ -8,7 +8,7 @@ class IndexController {
 
 	log;
 
-	//@Value(Spring-ioc-mvc.port)
+	//@Value(j-spring-mvc.port)
 	port;
 
 	//@Autowired
@@ -16,7 +16,7 @@ class IndexController {
 
 	/**
 		路由：/
-		参数：req,res,session,$session 均可以自动注入 
+		参数：req,res,session,$session 均可以自动注入
 			 $session 代表的是包裹的session，提供的额外的api
 	*/
 

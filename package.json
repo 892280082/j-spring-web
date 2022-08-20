@@ -1,6 +1,6 @@
 {
   "name": "j-spring-mvc",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "",
   "main": "spring_extends/index.js",
   "dependencies": {
