@@ -1,5 +1,5 @@
 const path = require('path');
-const {fastLog} = require('spring-ioc')
+const {fastLog} = require('j-spring')
 
 //封装基础session
 class WrapSession {

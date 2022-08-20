@@ -15,25 +15,25 @@ class SpringIocMvc {
 
 	server;
 
-	//@Value(value=Spring-ioc-mvc.port,force=false)
+	//@Value(value=j-spring-mvc.port,force=false)
 	port=3000;
 
 	//@Autowired
 	springFactory;
 
-	//@Value(value=Spring-ioc-mvc.views,force=false)
+	//@Value(value=j-spring-mvc.views,force=false)
 	springMvcView = 'views';
 
-	//@Value(value=Spring-ioc-mvc.static,force=false)
+	//@Value(value=j-spring-mvc.static,force=false)
 	springMvcAssertStaticPath = '/static';
 
-	//@Value(value=Spring-ioc-mvc.viewEngine,force=false)
+	//@Value(value=j-spring-mvc.viewEngine,force=false)
 	viewEngine = 'art';
 
-	//@Value(value=Spring-ioc-mvc.session.injectView,force=false)
+	//@Value(value=j-spring-mvc.session.injectView,force=false)
 	injectView = true;
 
-	//@Value(value=Spring-ioc.pattern,force=false)
+	//@Value(value=j-spring.pattern,force=false)
 	pattern = 'dev';
 
 
@@ -149,7 +149,7 @@ class SpringIocMvc {
 
 			server.listen(port);
 			server.on('error', e=> {
-				log.error("spring-ioc-mvc start error!")
+				log.error("j-spring-mvc start error!")
 				log.error(e)
 				reject(e);
 			});

@@ -3,7 +3,7 @@ const {SpringIocMvc} = require("./bean/SpringIocMvc")
 const {SpringIocMvcSession} = require("./bean/SpringIocMvcSession")
 
 //包加载器
-const SpringIocMvcScaner =  (packageName='spring-ioc-mvc')=> {
+const SpringIocMvcScaner =  (packageName='j-spring-mvc')=> {
 	return [
 			{
 				packageName,

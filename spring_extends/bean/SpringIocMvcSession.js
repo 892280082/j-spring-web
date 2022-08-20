@@ -3,13 +3,13 @@
 //@SpringMvcAppExtend
 class SpringIocMvcSession {
 
-	//@Value(value=Spring-ioc-mvc.session.state,force=false)
+	//@Value(value=j-spring-mvc.session.state,force=false)
 	state= 'on';
 
-	//@Value(value=Spring-ioc-mvc.session.secret,force=false)
+	//@Value(value=j-spring-mvc.session.secret,force=false)
 	secret="keyboard cat";
 
-	//@Value(value=Spring-ioc-mvc.session.maxAge,force=false)
+	//@Value(value=j-spring-mvc.session.maxAge,force=false)
 	maxAge= 60 * 60 * 1000; //1 hour
 
 	log;
