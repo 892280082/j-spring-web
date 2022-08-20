@@ -22,6 +22,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "yeqin",
+  "repository": {
+    "type": "git",
+    "url": "git@gitee.com:woaianqi/j-spring-mvc.git"
+  },
   "license": "ISC"
 }
