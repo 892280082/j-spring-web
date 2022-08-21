@@ -73,6 +73,9 @@ const doAggregation = (dataMap,prefix) => {
 	return data;
 }
 
+/**
+  封装一些基础的response功能，例如发送文件
+*/
 class RequestUtil {
 
   req;
@@ -94,7 +97,7 @@ class RequestUtil {
     return new Promise((r,j) => {
 
       fs.access(filePath, fs.F_OK, (err) => {
-        
+
         if (err) {
           return j(err)
         }
