@@ -1,6 +1,6 @@
 const path = require('path');
 const {fastLog} = require('j-spring')
-const { WrapSession,doAggregation } = require('./util')
+const { WrapSession,doAggregation,RequestUtil } = require('./util')
 
 
 class MappingDelegate {
@@ -135,6 +135,7 @@ class MappingDelegate {
 					case 'res':return res;
 					case 'session':return req.session;
 					case '$session':return new WrapSession(req.session);
+					case '$util':return new RequestUtil(req,res);
 					default:
 
 						if(isAggregation){

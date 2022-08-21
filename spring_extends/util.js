@@ -1,3 +1,7 @@
+const fs = require('fs')
+const mime = require('mime');
+const path = require('path')
+
 //封装基础session
 class WrapSession {
 	constructor(session){
@@ -69,4 +73,73 @@ const doAggregation = (dataMap,prefix) => {
 	return data;
 }
 
-module.exports = {WrapSession,doAggregation}
+class RequestUtil {
+
+  req;
+
+  res;
+
+  constructor(req,res){
+    this.req = req;
+    this.res = res;
+  }
+
+  /**
+    发送文件流
+  */
+  sendFile(filePath){
+
+    const {res} = this;
+
+    return new Promise((r,j) => {
+
+      fs.access(filePath, fs.F_OK, (err) => {
+        
+        if (err) {
+          return j(err)
+        }
+
+        res.setHeader('Content-Type', mime.getType(filePath))
+
+        const cs = fs.createReadStream(filePath);
+
+        cs.on("data", chunk => {
+            res.write(chunk);
+        })
+
+        cs.on("end", () => {
+            res.status(200);
+            res.end();
+            r();
+        })
+
+      })
+
+    })
+
+  }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = {WrapSession,doAggregation,RequestUtil}

@@ -1,3 +1,4 @@
+const path = require('path')
 
 /**
 	测试接口传参的api
@@ -83,6 +84,14 @@ class TestApiController {
 	async testPostRequest(a,b){
 		return this.apiTestService.doVerify(150,{a,b})
 	}
+
+
+	//@Get
+	async downFile($util){
+
+		await $util.sendFile(path.join(__dirname,'spring-framework.png'))
+	}
+
 
 }
 
