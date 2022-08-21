@@ -1,76 +1,7 @@
 const path = require('path');
 const {fastLog} = require('j-spring')
+const { WrapSession,doAggregation } = require('./util')
 
-//封装基础session
-class WrapSession {
-	constructor(session){
-		this.session = session;
-	}
-	get(key){
-		const v = this.session[key]
-		if(!v)
-			throw `session key [${key}] not exist`
-	}
-	getOr(key,defaultValue){
-		if(this.session[key])
-			return this.session[key];
-		this.session[key] = defaultValue;
-		return this.session[key];
-	}
-	destory(key){
-		this.session[key] = undefined;
-	}
-	set(key,value){
-		this.session[key] = value;
-	}
-}
-
-
-/**
-	聚合map 
-	const dataMap = {
-		'stu.info.type':'xiaoban',
-		'stu.info.class':'demaxiya',
-		'stu.name':"zhansan",
-		'stu.age':12
-	}
-	{
-	  info: { type: 'xiaoban', class: 'demaxiya' },
-	  name: 'zhansan',
-	  age: 12
-	}
-*/
-const doAggregation = (dataMap,prefix) => {
-
-	let data = {};
-
-	const addAttr = (d,keys,value) => {
-		for(let i=0;i<keys.length;i++){
-			const key = keys[i];
-			if(i === keys.length-1){
-				d[key] = value;
-				break;
-			}
-			if(d[key]){
-				d = d[key];
-			}else{
-				d[key] = {};
-				d = d[key];
-			}
-
-		}
-	}
-
-	for(let p in dataMap){
-
-		if(p.indexOf(prefix) === 0){
-			addAttr(data,p.replace(prefix,"").split('.'),dataMap[p])
-		}
-
-	}
-
-	return data;
-}
 
 class MappingDelegate {
 
@@ -108,7 +39,7 @@ class MappingDelegate {
 	_resolveInovkeType(){
 		const {methodDefine} = this;
 		if(methodDefine.hasAnnotation('Get')){
-			this.invokeType = 'get'; 
+			this.invokeType = 'get';
 			return;
 		}
 
@@ -189,7 +120,7 @@ class MappingDelegate {
 
 
 
-	//获取反射的 
+	//获取反射的
 	getReflectParam(req,res){
 
 		return this.paramDefineList.map(p => {
@@ -222,7 +153,7 @@ class MappingDelegate {
 						return v;
 				}
 			}
-			
+
 			switch(type){
 				case "path": v=req.params[name]; break;
 				case "query":v=req.query[name];break;
@@ -245,7 +176,7 @@ class MappingDelegate {
 
 	//对外暴漏的调用方法
 	async invoke(req, res, next){
-		
+
 		const {controllerBean,methodDefine,beanDefine,responseType,mvc} = this;
 
 		let refectParam,result = null;
