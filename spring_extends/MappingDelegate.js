@@ -183,7 +183,7 @@ class MappingDelegate {
 		let refectParam,result = null;
 
 		const doHanderError = error => {
-			mvc.springIocMvcExceptionHander['error_500'](req,res,{requestType:responseType.toLowerCase(),error});
+			mvc.jSpringMvcExceptionHander['error_500'](req,res,{requestType:responseType.toLowerCase(),error});
 		}
 
 		try{

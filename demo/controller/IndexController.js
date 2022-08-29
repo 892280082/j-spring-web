@@ -41,8 +41,8 @@ class IndexController {
 	springmvc-全局异常捕获
 	默认就是这么处理的，可以删除。
 */
-//@Bean(springIocMvcExceptionHander)
-class SpringIocMvcExceptionHander {
+//@Bean(jSpringMvcExceptionHander)
+class JSpringMvcExceptionHander {
 
 	log;
 
@@ -73,4 +73,4 @@ class SpringMvcAppExtendBean1 {
 }
 
 
-module.exports = { IndexController,SpringIocMvcExceptionHander,SpringMvcAppExtendBean1}
+module.exports = { IndexController,JSpringMvcExceptionHander,SpringMvcAppExtendBean1}

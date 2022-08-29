@@ -9,7 +9,7 @@ const {MappingDelegate} = require("../MappingDelegate")
 
 
 //@Bean
-class SpringIocMvc {
+class JSpringMvc {
 
 	app;
 
@@ -37,8 +37,8 @@ class SpringIocMvc {
 	pattern = 'dev';
 
 
-	//@Autowired(value=springIocMvcExceptionHander,force=false)
-	springIocMvcExceptionHander = {
+	//@Autowired(value=jSpringMvcExceptionHander,force=false)
+	jSpringMvcExceptionHander = {
 		error_404:(req,res)=>{
 			res.status(404).send('404 PATH NOT FIND')
 		},
@@ -207,7 +207,7 @@ class SpringIocMvc {
 
 		// 最后添加404处理
 		this.app.use((req,res)=>{
-			this.springIocMvcExceptionHander.error_404(req,res)
+			this.jSpringMvcExceptionHander.error_404(req,res)
 		})
 
 	}
@@ -244,4 +244,4 @@ class SpringIocMvc {
 
 }
 
-module.exports = {SpringIocMvc}
+module.exports = {JSpringMvc}
