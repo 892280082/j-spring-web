@@ -1,4 +1,4 @@
-# <img src="doc/spring-framework.png" width="80" height="80"> Spring Framework For Node
+# Spring Framework For Node
 
 # JSpringMvc
 > 原生js实现SpringMvc框架。
