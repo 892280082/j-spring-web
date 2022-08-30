@@ -10,6 +10,12 @@
 # 生态
 - [j-spring-mvc-session-sqlite3](https://gitee.com/woaianqi/j-spring-mvc-session-sqlite3) session模块
 
+# 安装
+
+```shell
+npm install j-spring-mvc --save
+```
+
 # 创建项目
 ```shell
 # 安装脚手架
