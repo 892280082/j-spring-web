@@ -47,7 +47,7 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
     }
 
 
-    postProcessAfterInitialization(bean: any, beanDefine: BeanDefine): Object {
+    postProcessAfterInitialization(bean: any, _beanDefine: BeanDefine): Object {
 
         if((bean as ExpressConfiguration).ExpressConfigurationSymbok == ExpressConfigurationSymbok){
             configureBeanList.add(bean);

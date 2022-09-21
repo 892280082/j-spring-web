@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.9.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -30,8 +30,12 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "springapp",
+  "name": "j-spring-mvc",
   "author": "yeqin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/892280082/j-spring-mvc.git"
+  },
   "module": "dist/springapp.esm.js",
   "size-limit": [
     {
@@ -49,6 +53,7 @@
     "@types/node": "^16.11.59",
     "husky": "^8.0.1",
     "size-limit": "^8.1.0",
+    "ts-node": "^10.9.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.4.0",
     "typescript": "^3.9.10"

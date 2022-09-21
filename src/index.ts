@@ -24,7 +24,7 @@ class SpringMvcPanel {
         spring.loadConfig(data);
     }
 
-    loadYaml(filePath:string){
+    loadYaml(_filePath:string){
         return this;
     }
 
