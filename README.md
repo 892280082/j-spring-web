@@ -1,193 +1,103 @@
-# Spring Framework For Node
+# TSDX User Guide
 
-# JSpringMvc
-> 原生js实现SpringMvc框架。
+Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
 
-- [j-spring](https://gitee.com/woaianqi/j-spring) 框架提供spring功能。
-- 秒级启动，内存占用小。
-- 路由的参数反射功能
+> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
 
-# 生态
-- [j-spring-mvc-session-sqlite3](https://gitee.com/woaianqi/j-spring-mvc-session-sqlite3) session模块
+> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
 
-# 安装
+## Commands
 
-```shell
-npm install j-spring-mvc --save
+TSDX scaffolds your new library inside `/src`.
+
+To run TSDX, use:
+
+```bash
+npm start # or yarn start
 ```
 
-# 创建项目
-```shell
-# 安装脚手架
-> npm install j-spring-cli -g
+This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
 
-# 启动脚手架，选择WEB项目
-> j-spring-cli
+To do a one-off build, use `npm run build` or `yarn build`.
+
+To run tests, use `npm test` or `yarn test`.
+
+## Configuration
+
+Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+
+### Jest
+
+Jest tests are set up to run with `npm test` or `yarn test`.
+
+### Bundle Analysis
+
+[`size-limit`](https://github.com/ai/size-limit) is set up to calculate the real cost of your library with `npm run size` and visualize the bundle with `npm run analyze`.
+
+#### Setup Files
+
+This is the folder structure we set up for you:
+
+```txt
+/src
+  index.tsx       # EDIT THIS
+/test
+  blah.test.tsx   # EDIT THIS
+.gitignore
+package.json
+README.md         # EDIT THIS
+tsconfig.json
 ```
 
+### Rollup
 
+TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
 
-# 文档
-###  1.加载j-spring-mvc模块
-文件：app.js
-```js
-const {SpringBoot} = require("j-spring")
-//加载 web 模块
-const {JSpringMvcScaner} = require("j-spring-mvc")
-//加载web session模块
-const {JSpringMvcSessionSqlite3Scaner} = require("j-spring-mvc-session-sqlite3")
+### TypeScript
 
-//根目录以启动js文件为准
-const app = new SpringBoot({
-  srcList:["./demo"],//需要扫描的源码目录
-  moduleList:[JSpringMvcScaner,JSpringMvcSessionSqlite3Scaner]
-});
+`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
 
-module.exports = {app}
-```
+## Continuous Integration
 
-###  2.启动
-文件：demo/Application.js
-```js
-//@SpringBoot
-class Application {
+### GitHub Actions
 
-	//@Autowired
-	jSpringMvc; //自动注入web模块的Bean
+Two actions are added by default:
 
+- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
+- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
 
-	async main(){
+## Optimizations
 
-		//启动springmvc
-		await this.jSpringMvc.start();
-
-	}
-
-}
-
- module.exports = { Application}
-```
-
-###  3.路由及参数反射
-文件：参考文件列表
-- demo/Controller/IndexController.js
-- demo/Controller/SessionApiController.js
+Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
 
 ```js
-//@Controller(apiTest)
-class TestApiController {
+// ./types/index.d.ts
+declare var __DEV__: boolean;
 
-	//@Autowired
-	apiTestService;
-
-	/**
-		返回页面 [页面路径,页面渲染对象]
-	*/
-
-	//@Get
-	async toPage(){
-			return ['page path',{}]
-	}
-
-	/**
-		参数 a,b 框架会自动反射query和param中的参数。
-		获取不到则报400错
-		返回json
-	*/
-
-	//@Get
-	//@Json
-	async queryParamTest(a,b){
-		return this.apiTestService.doVerify(100,{a,b})
-	}
-
-	/**
-		自动反射的参数
-		request req
-		response res
-		session 插件带的sesion
-		$session 封装过的session对象
-		$util 辅助对象 例如下载文件
-	*/
-
-	//@Get
-	async otherFn(request,response,session,$session,$util){
-			...
-	}
-
+// inside your code...
+if (__DEV__) {
+  console.log('foo');
 }
 ```
 
-### 4.拦截器
-> 就是在controller里面加上了一个@Filter
+You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
 
-```js
-//@Controller(sessionApi)
-class SessionApiController {
+## Module Formats
 
-	log;
+CJS, ESModules, and UMD module formats are supported.
 
-	/**
-		拦截整个controller的请求，通过true 拒绝false。
-		其它操作例如重定向 请使用res操作。
-	*/
+The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
 
-	//@Filter(/sessionApi)
-	async filterNoSessionRequest(req,res){
-		return true;
-	}
+## Named Exports
 
-}
+Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
 
-```
+## Including Styles
 
+There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
 
-###  5.统一错误处理
-> 实现name为jSpringMvcExceptionHander的Bean就可以了
+For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
 
-```js
-/**
-	springmvc-全局异常捕获
-	默认就是这么处理的，可以删除。
-*/
-//@Bean(jSpringMvcExceptionHander)
-class JSpringMvcExceptionHander {
+## Publishing to NPM
 
-	log;
-
-	error_404 = (req,res)=>{
-			res.status(404).send('404 PATH NOT FIND')
-	}
-
-	error_500 = (req,res,{error}) => {
-			res.status(500).json({error});
-	}
-
-}
-
-```
-
-###  6.扩展
-> 实现添加@SpringMvcAppExtend注解的Bean即可。
-
-```js
-
-/**
-	扩展express
-*/
-
-//@SpringMvcAppExtend
-class SpringMvcAppExtendBean1 {
-
-	log;
-
-	async loadApp(app){
-		 this.log.method('loadApp').debug("可以使用@SpringMvcAppExtend扩展express,可以存在多个！");
-	}
-
-}
-```
-
-# 证书
-
-The Spring Framework For Node is released under version 2.0 of the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
+We recommend using [np](https://github.com/sindresorhus/np).
