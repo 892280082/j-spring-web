@@ -1,4 +1,3 @@
-import { notDeepEqual } from "assert";
 import { BeanDefine, isFunction, MethodDefine } from "j-spring";
 import path from "path";
 import { json } from "stream/consumers";

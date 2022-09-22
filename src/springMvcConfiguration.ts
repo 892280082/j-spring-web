@@ -7,7 +7,7 @@ import { ExpressConfiguration } from './springMvcBeans'
 @Component
 export class EjsConfigruation implements ExpressConfiguration {
 
-    load(app: any): void {
+    load(_app: any): void {
         console.log('add ejs configuration!');
     }
     
