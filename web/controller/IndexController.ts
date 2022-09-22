@@ -1,16 +1,18 @@
-import { spring } from 'j-spring';
-import { json } from 'stream/consumers';
-import {Controller,Json,Get, Post, RequestMapping, PathVariable} from '../../src/springMvcAnnotation'
+import { spring, Value } from 'j-spring';
+import {Controller,Json,Get, Post, RequestMapping, PathVariable, RequestParam} from '../../src/springMvcAnnotation'
 
 
 @Controller('/')
 @Json
 export class IndexController {
 
+    @Value({path:'indexMsg',type:String})
+    indexMsg:string;
+
     //测试1: 首页
     @Get('/')
     async index(){
-        return 'hello world!'
+        return `${this.indexMsg} => hello world!`
     }
 
     //测试2: @Get 方法不加参数 默认使用方法名作为路径
@@ -39,16 +41,20 @@ export class IndexController {
     }
 
     //测试6： 获取resful参数
-    @Get('/getResefulData/:data')
-    async getResefulData(@PathVariable('data',String) data:string){
-        return data;        
+    @Get('/query')
+    async query(@RequestParam('data',String) data:string){
+        return {data};        
     }
 
     //测试7 获取
-    @Get('/getResefulDataNumber/:data')
-    async getResefulDataNumber(@PathVariable('data',Number) data:number){
-        return data;        
+    @Get('/path/:data')
+    async path(@PathVariable('data',Number) data:number){
+        return {data};        
     }
 
+    @Get('/mix/:user')
+    async mix(@PathVariable('user') user:String, @RequestParam('msg') msg:String){
+        return {user,msg}        
+    }
 
 }

@@ -1,13 +1,18 @@
-
-import {springMvc} from '../src'
+import { spring } from 'j-spring';
+import { SpringMvcModule,EjsConfigruation } from '../src'
 import { IndexController } from "./controller/IndexController";
 
-//需要索引的类
+//springmvc 配置
+const springMvcConfig = [
+    EjsConfigruation
+]
+
+//请求控制器
 const controllerClassList = [
     IndexController
 ]
 
-springMvc.controller(controllerClassList).loadYaml('./web.yaml').start();
+spring.bindList([...SpringMvcModule,...springMvcConfig,...controllerClassList]).loadConfig({'indexMsg':'j-spring'}).invokeStarter();
 
 
 

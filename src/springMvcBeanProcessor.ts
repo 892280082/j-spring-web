@@ -1,35 +1,17 @@
 import { BeanDefine, BeanPostProcessor, Component } from "j-spring";
 import { Controller } from "./springMvcAnnotation";
-
+import {ExpressLoad,isExpressConfiguration,ControllerBeanConfiguration} from './springMvcBeans'
 
 //解析的bean集合
 const configureBeanList = new Set<ExpressLoad>();
 
 //运行结束时清空
-export const addConfiguration = (app:any)=>{
+export const loadConfiguration = (app:any)=>{
     configureBeanList.forEach(config => config.load(app));
     configureBeanList.clear();
 }
 
-export interface ExpressLoad {
-    load(app:any):void;
-}
 
-const ExpressConfigurationSymbok = Symbol('ExpressConfiguration');
-
-//express App 配置
-export abstract class ExpressConfiguration implements ExpressLoad {
-    abstract load(app: any):void;
-    ExpressConfigurationSymbok:Symbol=ExpressConfigurationSymbok;
-}
-
-//controller配置
-class ControllerBeanConfiguration implements ExpressLoad {
-    //加载express app
-    load(_app: any): void {
-        
-    }
-}
 
 /**
  * 用于设置express的配置
@@ -49,7 +31,7 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 
     postProcessAfterInitialization(bean: any, _beanDefine: BeanDefine): Object {
 
-        if((bean as ExpressConfiguration).ExpressConfigurationSymbok == ExpressConfigurationSymbok){
+        if(isExpressConfiguration(bean)){
             configureBeanList.add(bean);
         }
 
@@ -78,7 +60,7 @@ export class ControllerBeanProcessor implements BeanPostProcessor {
     postProcessAfterInitialization(bean: any, beanDefine: BeanDefine): Object{
 
         if(beanDefine.hasAnnotation(Controller)){
-                configureBeanList.add(new ControllerBeanConfiguration())
+                configureBeanList.add(new ControllerBeanConfiguration(bean,beanDefine))
         }
 
         return bean;
