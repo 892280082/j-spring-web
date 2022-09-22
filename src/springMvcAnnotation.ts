@@ -20,6 +20,8 @@ export type GetParam = {
 
 export const Get = (path?:string) => spring.methodAnnotationGenerator('j-spring.Get',{path},Get);
 
+export const ResponseBody = spring.methodAnnotationGenerator('j-spring.ResponseBody',{});
+
 //方法控制器 Post请求
 
 export type PostParam = {

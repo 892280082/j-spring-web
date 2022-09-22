@@ -1,7 +1,6 @@
 import { BeanDefine, isFunction, MethodDefine } from "j-spring";
 import path from "path";
-import { json } from "stream/consumers";
-import { Controller, ControllerParam, Get, GetParam, Json, ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam } from "./springMvcAnnotation";
+import { Controller, ControllerParam, Get, GetParam, Json,ResponseBody,ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam } from "./springMvcAnnotation";
 
 export interface ExpressLoad {
     load(app:any):void;
@@ -58,7 +57,7 @@ class MethodRouter {
 
     private resolveSendType():string {
         const {bd,md} = this.option;
-        if(bd.hasAnnotation(Json) || md.hasAnnotation(json))
+        if(bd.hasAnnotation(Json) || md.hasAnnotation(ResponseBody))
             return 'json';
         return 'html';
     }
