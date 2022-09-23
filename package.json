@@ -60,6 +60,6 @@
   },
   "dependencies": {
     "express": "^4.18.1",
-    "j-spring": "^2.0.0"
+    "j-spring": "^2.0.1"
   }
 }

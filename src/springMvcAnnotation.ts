@@ -1,5 +1,6 @@
 import {spring} from 'j-spring'
-
+import { isFunction } from "j-spring";
+import { Request, Response } from "express";
 
 //类 控制器注解
 export type ControllerParam = {
@@ -43,6 +44,24 @@ export type ParamterParamType = {
     name:string,
     type:Function
 }
+
+//express中间件
+export interface ExpressMiddleWare {
+    isExpressMidldleWare():boolean;
+    invoke(req:any,res:any,next:Function):void
+}
+
+//判断是否是中间件
+export function isExpressMiddleWare(obj:any){
+    const a = obj as ExpressMiddleWare;
+    return isFunction(a.invoke) && isFunction(a.isExpressMidldleWare) && a.isExpressMidldleWare();
+}
+
+export type MiddleWareParam = {
+    middleWareClassList:(new()=>ExpressMiddleWare)[]
+}
+export const MiddleWare = (middleWareClassList:(new()=>ExpressMiddleWare)[]) => spring.methodAnnotationGenerator('j-spring.ExpressMiddleWare',{middleWareClassList},MiddleWare);
+
 
 //字段
 export const PathVariable = (name:string,type?:Function) => spring.paramterAnnotationGenerator('j-spring.PathVariable',name,{name,type:type||String},PathVariable);

@@ -1,6 +1,6 @@
-import { BeanDefine, isFunction, MethodDefine } from "j-spring";
+import { assemble, BeanDefine, isFunction, MethodDefine, spring } from "j-spring";
 import path from "path";
-import { Controller, ControllerParam, Get, GetParam, Json,ResponseBody,ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam } from "./springMvcAnnotation";
+import { Controller, ControllerParam, Get, GetParam, Json,ResponseBody,ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam, MiddleWare, MiddleWareParam, ExpressMiddleWare } from "./springMvcAnnotation";
 
 export interface ExpressLoad {
     load(app:any):void;
@@ -37,6 +37,8 @@ class MethodRouter {
     reqPath:string;//请求路径
 
     maxParamLength:number;//最大参数数量
+
+    middleWareFunction:Function[];//中间件函数
 
     error(msg:string){
         throw new Error(`class:${this.option.bd.clazz} method:${this.option.md.name} router analysis error:${msg}`);
@@ -89,6 +91,18 @@ class MethodRouter {
         return i+1;
     }
 
+    private resolveMiddleWareFunction():Function[]{
+        const {md} = this.option;
+        const middleWareAnno = md.getAnnotation(MiddleWare)
+        if(!middleWareAnno)
+            return [];
+        return (middleWareAnno.params as MiddleWareParam).middleWareClassList.map(assemble).map(bean => {
+            const invoke = (bean as ExpressMiddleWare).invoke;
+            invoke.bind(bean);
+            return invoke;
+        })
+    }
+
     getInvokeParams(req:any):any[]{
         const {md} = this.option;
         const params = [];
@@ -124,6 +138,7 @@ class MethodRouter {
         this.invokeMethod = this.resolveInokeMethod();
         this.sendType = this.resolveSendType();
         this.reqPath = this.resolveReqPath();
+        this.middleWareFunction = this.resolveMiddleWareFunction();//解析中间件
         this.maxParamLength = this.resolvePamaterLength();
     }
 
@@ -131,7 +146,7 @@ class MethodRouter {
     loadExpressApp(app:any){
 
         const {md,bean} = this.option;
-        const { invokeMethod,sendType,reqPath } =this;
+        const { invokeMethod,sendType,reqPath,middleWareFunction } =this;
 
         //代理的函数
         const proxyFunction = async (req:any,res:any) => {
@@ -160,7 +175,7 @@ class MethodRouter {
         //执行的方法
         const appMethod = app[invokeMethod];
 
-        appMethod.apply(app,[reqPath,proxyFunction])
+        appMethod.apply(app,[reqPath,...middleWareFunction,proxyFunction])
         
     }
 
