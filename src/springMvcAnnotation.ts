@@ -1,6 +1,5 @@
 import {spring} from 'j-spring'
 import { isFunction } from "j-spring";
-import { Request, Response } from "express";
 
 //类 控制器注解
 export type ControllerParam = {

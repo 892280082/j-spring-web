@@ -1,28 +1,59 @@
-import { assemble, BeanDefine, isFunction, MethodDefine, spring } from "j-spring";
+import { Anntation, assemble, BeanDefine, MethodDefine } from "j-spring";
 import path from "path";
 import { Controller, ControllerParam, Get, GetParam, Json,ResponseBody,ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam, MiddleWare, MiddleWareParam, ExpressMiddleWare } from "./springMvcAnnotation";
+import {ExpressLoad,SpringMvcParamInteceptor,SpringMvcExceptionHandler} from './springMvcExtends'
 
-export interface ExpressLoad {
-    load(app:any):void;
+//参数处理器
+export const paramInterceptor:SpringMvcParamInteceptor<any>[] = [];
+
+type paramContainer = {
+    inteceptor:SpringMvcParamInteceptor<any>|undefined,
+    bean:any
 }
-
-//express App 配置
-export interface ExpressConfiguration extends ExpressLoad {
-    load(app: any):void;
-    isExpressConfiguration():boolean;
-}
-
-export function isExpressConfiguration(bean:any){
-    const ec = bean as ExpressConfiguration;
-    return isFunction(ec.load) && isFunction(ec.isExpressConfiguration) && ec.isExpressConfiguration();
-}
-
 
 type MethodRouterParm = {
     bean:any,
     bd:BeanDefine,
     md:MethodDefine
+    exceptionHandler:SpringMvcExceptionHandler
 }
+
+
+//query拦截器
+class RequestParamParamInteceptor implements SpringMvcParamInteceptor<any> {
+    isSpringMvcParamInteceptor(): boolean {
+        return true;
+    }
+    getAnnotation(): Function {
+        return RequestParam;
+    }
+    getBean(req: any, pa: Anntation): Promise<any> {
+        const {name} = pa.params as ParamterParamType;
+        return req.query[name];
+    }
+    destoryBean(_bean: any): void {
+    }
+}
+
+//params拦截器
+class PathVariableParamInteceptor implements SpringMvcParamInteceptor<any> {
+    isSpringMvcParamInteceptor(): boolean {
+        return true;
+    }
+    getAnnotation(): Function {
+        return PathVariable;
+    }
+    getBean(req: any, pa: Anntation): Promise<any> {
+        const {name} = pa.params as ParamterParamType;
+        return req.params[name];
+    }
+    destoryBean(_bean: any): void {
+    }
+}
+
+
+paramInterceptor.push(new RequestParamParamInteceptor());
+paramInterceptor.push(new PathVariableParamInteceptor())
 
 class MethodRouter {
 
@@ -103,31 +134,29 @@ class MethodRouter {
         })
     }
 
-    getInvokeParams(req:any):any[]{
+    async getInvokeParams(req:any):Promise<paramContainer[]>{
         const {md} = this.option;
-        const params = [];
+        const params:paramContainer[] = [];
+
+        //填充所有参数
         for(let i=0;i<this.maxParamLength;i++)
-            params.push(undefined);
+            params.push({bean:undefined,inteceptor:undefined});
 
-        md.paramterDefineList.forEach(p => {
-
-            const requestParam = p.getAnnotation(RequestParam);
-            if(requestParam){
-                const annoParam = requestParam.params as ParamterParamType
-                params[p.index] = req.query[annoParam.name]
-                return;
+        //每个字段匹配第一个可以处理的注解
+        for (let pdi = 0; pdi < md.paramterDefineList.length; pdi++) {
+            const paramterDefine = md.paramterDefineList[pdi];
+            for (let ai = 0; ai < paramterDefine.annotationList.length; ai++) {
+                const an:Anntation =  paramterDefine.annotationList[ai];
+                const pi = paramInterceptor.find(pi => pi.getAnnotation() === an.clazz)
+                if(pi){
+                    const bean =  await pi.getBean(req,an);
+                    params[paramterDefine.index] = {bean,inteceptor:pi};
+                }
             }
-
-            const pathParam = p.getAnnotation(PathVariable);
-            if(pathParam){
-                const annoParam = pathParam.params as ParamterParamType
-                params[p.index] = req.params[annoParam.name]
-                return;
-            }
-
-        })
+        }
 
         return params;
+
     }
 
     constructor(public option:MethodRouterParm){
@@ -145,31 +174,52 @@ class MethodRouter {
 
     loadExpressApp(app:any){
 
-        const {md,bean} = this.option;
+        const {md,bean,exceptionHandler} = this.option;
         const { invokeMethod,sendType,reqPath,middleWareFunction } =this;
 
         //代理的函数
         const proxyFunction = async (req:any,res:any) => {
 
-            const params = this.getInvokeParams(req);
-            const result = await bean[md.name].apply(bean,params);
-            if(sendType === 'json'){
-                return res.json(result)
+            const wrapHandler = (code:number,e:unknown) =>  exceptionHandler.hanlder(req,res,{code,error:e as string,sendType})
+
+            let params:paramContainer[] = [];
+
+            //1.处理参数反射阶段
+            try{
+                params = await this.getInvokeParams(req);
+            }catch(e){
+               return wrapHandler(400,e);
             }
-            switch(sendType){
-                case 'json':
-                    return res.json(result);
-                    break;
-                case 'html':
-                    if(Array.isArray(result)){
-                        return res.render(result[0],result[1]||{})
-                    }else{
-                        this.error('sendType:html only support array');
-                    }
-                    break;
-                default:
-                    this.error(`sendType error:${sendType}`)
+            
+            try{
+                //2.业务处理阶段
+                const paramBeans = params.map(p => p.bean);
+                const result = await bean[md.name].apply(bean,paramBeans);
+
+                //3.渲染阶段
+                const desctryParam = ()=> params.forEach(p => p.inteceptor?.destoryBean(p.bean));
+                switch(sendType){
+                    case 'json':
+                         res.json(result);
+                         desctryParam();
+                         return;
+                        break;
+                    case 'html':
+                        if(Array.isArray(result)){
+                            res.render(result[0],result[1]||{})
+                            desctryParam();
+                            return;
+                        }else{
+                            wrapHandler(500,'sendType:html only support array');
+                        }
+                        break;
+                    default:
+                        wrapHandler(500,`sendType error:${sendType}`);
+                }
+            }catch(e){
+                wrapHandler(500,e);
             }
+
         }
 
         //执行的方法
@@ -192,12 +242,11 @@ export class ControllerBeanConfiguration implements ExpressLoad {
 
     methodRouter:MethodRouter[] = [];
 
-    constructor(public bean:any,public bd:BeanDefine){
+    constructor(public bean:any,public bd:BeanDefine,public exceptionHandler:SpringMvcExceptionHandler){
 
-        bd.methodList.filter(hasTargetAnnotation)
-        .forEach(md => {
+        bd.methodList.filter(hasTargetAnnotation).forEach(md => {
 
-            this.methodRouter.push(new MethodRouter({bean,bd,md}))
+            this.methodRouter.push(new MethodRouter({bean,bd,md,exceptionHandler}))
 
         })
 

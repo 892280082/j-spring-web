@@ -1,9 +1,9 @@
-import { ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor } from "./springMvcBeanProcessor";
+import { ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor,SpringParamterBeanPostProcessor } from "./springMvcBeanProcessor";
 import { SpringMvcStarter } from './springMvcContainer'
-export {ExpressConfiguration} from './springMvcBeans'
 
 
 export * from './springMvcConfiguration'
+export * from './springMvcAnnotation'
 
 
 /**
@@ -11,4 +11,4 @@ export * from './springMvcConfiguration'
  * ExpressAppEnhanceBeanProcessor ExpressConfiguration的后置处理器
  * ControllerBeanProcessor controller的后置处理器
  */
-export const SpringMvcModule = [SpringMvcStarter,ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor];
+export const SpringMvcModule = [SpringMvcStarter,ExpressAppEnhanceBeanProcessor,ControllerBeanProcessor,SpringParamterBeanPostProcessor];

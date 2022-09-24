@@ -1,11 +1,11 @@
 import { spring } from 'j-spring';
-import { SpringMvcModule,EjsConfigruation } from '../src'
+import { SpringMvcModule,EjsViewConfigruation } from '../src'
 import { IndexController } from "./controller/IndexController";
 import { StudentController } from './controller/StudentController'
 
 //springmvc 配置
 const springMvcConfig = [
-    EjsConfigruation
+    EjsViewConfigruation
 ]
 
 //请求控制器
@@ -14,7 +14,7 @@ const controllerClassList = [
     StudentController
 ]
 
-spring.bindList([...SpringMvcModule,...springMvcConfig,...controllerClassList]).loadConfig({'indexMsg':'j-spring'}).invokeStarter();
+spring.bindList([...SpringMvcModule,...springMvcConfig,...controllerClassList]).loadConfig({'indexMsg':'j-spring','root':__dirname}).invokeStarter();
 
 
 

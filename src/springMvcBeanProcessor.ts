@@ -1,6 +1,9 @@
-import { BeanDefine, BeanPostProcessor, Component } from "j-spring";
+import { Autowired, BeanDefine, BeanPostProcessor, Component } from "j-spring";
 import { Controller } from "./springMvcAnnotation";
-import {ExpressLoad,isExpressConfiguration,ControllerBeanConfiguration} from './springMvcBeans'
+import {ControllerBeanConfiguration,paramInterceptor} from './springMvcRouterDelegate'
+import { ExpressLoad,isExpressConfiguration,SpringMvcExceptionHandler} from './springMvcExtends'
+import { SpringMvcExceptionHandlerConfigration } from './springMvcConfiguration'
+import {isSpringMvcParamInteceptor} from './springMvcExtends'
 
 //解析的bean集合
 const configureBeanList = new Set<ExpressLoad>();
@@ -10,6 +13,7 @@ export const loadConfiguration = (app:any)=>{
     configureBeanList.forEach(config => config.load(app));
     configureBeanList.clear();
 }
+
 
 
 
@@ -42,11 +46,18 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 }
 
 
+
+
+
 /**
  * 用于设置express的路由
  */
  @Component
 export class ControllerBeanProcessor implements BeanPostProcessor {
+
+
+    @Autowired<SpringMvcExceptionHandler>({clazz:SpringMvcExceptionHandlerConfigration})
+    exceptionHanlder:SpringMvcExceptionHandler;
 
     getSort(): number {
         return 100;
@@ -60,7 +71,7 @@ export class ControllerBeanProcessor implements BeanPostProcessor {
     postProcessAfterInitialization(bean: any, beanDefine: BeanDefine): Object{
 
         if(beanDefine.hasAnnotation(Controller)){
-                configureBeanList.add(new ControllerBeanConfiguration(bean,beanDefine))
+                configureBeanList.add(new ControllerBeanConfiguration(bean,beanDefine,this.exceptionHanlder))
         }
 
         return bean;
@@ -68,3 +79,23 @@ export class ControllerBeanProcessor implements BeanPostProcessor {
     }
 
 }
+
+/**
+ * 用于设置express router中参数的处理器
+*/
+@Component
+export class SpringParamterBeanPostProcessor implements BeanPostProcessor {
+    getSort(): number {
+        return 100;
+    }
+    postProcessBeforeInitialization(bean: any, _beanDefine: BeanDefine): Object {
+        return bean;
+    }
+    postProcessAfterInitialization(bean: any, _beanDefine: BeanDefine): Object {
+        if(isSpringMvcParamInteceptor(bean)){
+            paramInterceptor.push(bean);
+        }
+        return bean;
+    }
+}
+

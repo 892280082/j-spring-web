@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
 import { Component } from "j-spring";
 import { ParsedQs } from "qs";
-import { Controller, ExpressMiddleWare, Get, Json, MiddleWare, PathVariable, RequestParam, ResponseBody } from "../../src/springMvcAnnotation";
+import { Controller, ExpressMiddleWare, Get, Json, MiddleWare, PathVariable, RequestParam, ResponseBody } from "../../src";
 
 
 @Component
@@ -24,6 +24,12 @@ class LogPrintMiddleWare implements ExpressMiddleWare{
 export class StudentController {
 
 
+    @Get()
+    async index(){
+        return ['index.ejs',{msg:'hello world'}]
+    }
+
+
     @Get('/getStudentInfo/:id')
     @ResponseBody
     @MiddleWare([LogPrintMiddleWare])
@@ -33,3 +39,5 @@ export class StudentController {
 
 
 }
+
+
