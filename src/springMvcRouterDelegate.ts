@@ -1,8 +1,7 @@
 import { Anntation, assemble, BeanDefine, Clazz, getBeanDefineByClass, MethodDefine } from "j-spring";
 import path from "path";
-import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam } from "./springMvcAnnotation";
+import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam, Param,SessionAttribute, ApiMiddleWare, MiddleWareParam, MiddleWare } from "./springMvcAnnotation";
 import {ExpressLoad,SpringMvcParamInteceptor,SpringMvcExceptionHandler} from './springMvcExtends'
-import {middleWareType} from './springMvcAnnotation'
 //参数处理器
 export const paramInterceptor:SpringMvcParamInteceptor<any>[] = [];
 
@@ -27,7 +26,7 @@ class RequestParamParamInteceptor implements SpringMvcParamInteceptor<any> {
     getAnnotation(): Function {
         return RequestParam;
     }
-    getBean(req: any, pa: Anntation): Promise<any> {
+    getBean(req: any,_res:any,pa: Anntation): Promise<any> | any{
         const {name} = pa.params as ParamterParamType;
         return req.query[name];
     }
@@ -43,7 +42,7 @@ class PathVariableParamInteceptor implements SpringMvcParamInteceptor<any> {
     getAnnotation(): Function {
         return PathVariable;
     }
-    getBean(req: any, pa: Anntation): Promise<any> {
+    getBean(req: any,_res:any, pa: Anntation): Promise<any> | any{
         const {name} = pa.params as ParamterParamType;
         return req.params[name];
     }
@@ -51,9 +50,55 @@ class PathVariableParamInteceptor implements SpringMvcParamInteceptor<any> {
     }
 }
 
+class ParamInteceptor implements SpringMvcParamInteceptor<any> {
+    isSpringMvcParamInteceptor(): boolean {
+        return true;
+    }
+    getAnnotation(): Function {
+       return Param;
+    }
+    getBean(req: any,res:any, pa: Anntation) {
+        const {name} = pa.params as ParamterParamType;
+        switch(name){
+            case 'req':return req;
+            case 'res':return res;
+            case 'session':return req.session;
+            default:
+                throw `no support name:${name}`
+        }
+    }
+    destoryBean(_bean: any): void {
+    }
+    
+}
+
+class SessionAttributeInteceptor implements SpringMvcParamInteceptor<any> {
+    isSpringMvcParamInteceptor(): boolean {
+        return true;
+    }
+    getAnnotation(): Function {
+       return SessionAttribute;
+    }
+    getBean(req: any,_res:any, pa: Anntation) {
+        if(!req.session){
+            throw 'not find session module'
+        }
+        const apam = pa.params as ParamterParamType;
+        const v = req.session[apam.name];
+        if(v === void 0)
+            throw `get session error!`
+        return v;
+    }
+    destoryBean(_bean: any): void {
+    }
+    
+}
+
 
 paramInterceptor.push(new RequestParamParamInteceptor());
-paramInterceptor.push(new PathVariableParamInteceptor())
+paramInterceptor.push(new PathVariableParamInteceptor());
+paramInterceptor.push(new ParamInteceptor());
+paramInterceptor.push(new SessionAttributeInteceptor());
 
 class MethodRouter {
 
@@ -99,17 +144,17 @@ class MethodRouter {
         const {bd,md} = this.option;
         const ctrParam = bd.getAnnotation(Controller)?.params as MappingParam;
         const ctrPath = ctrParam.path;
-        const ctrMiddleWare = ctrParam.middleWareClassList || [];
         if(isEmpty(ctrPath)){
             this.error('resolveReqPath @Controller path not to be empty')
         }
+        const ctrMiddleWare = (bd.getAnnotation(ApiMiddleWare)?.params as MiddleWareParam)?.middleWareClassList || [];
 
         const mp = (md.getAnnotation(Get) || md.getAnnotation(Post) || md.getAnnotation(RequestMapping))?.params as MappingParam
         const mdPath = mp.path || md.name;
-        const methodMiddleWare = mp.middleWareClassList || [];
+        const methodMiddleWare =( md.getAnnotation(MiddleWare)?.params as MiddleWareParam)?.middleWareClassList || [];
         const temp = [...ctrMiddleWare,...methodMiddleWare];
         this.middleWareFunction = Array.from(new Set<Function>(temp)); 
-        return  path.join(ctrPath,mdPath).replace(/\\/g,`/`);
+        return  path.join('/',ctrPath,mdPath).replace(/\\/g,`/`);
     }
 
     private resolvePamaterLength():number{
@@ -133,7 +178,7 @@ class MethodRouter {
         });
     }
 
-    async getInvokeParams(req:any):Promise<paramContainer[]>{
+    async getInvokeParams(req:any,res:any):Promise<paramContainer[]>{
         const {md} = this.option;
         const params:paramContainer[] = [];
 
@@ -150,7 +195,8 @@ class MethodRouter {
                 if(pi){
                     let bean;
                     try{
-                        bean =  await pi.getBean(req,an);
+                        const tempBean =  pi.getBean(req,res,an);
+                        bean = tempBean instanceof Promise ? await tempBean : tempBean;
                     }catch(e){
                         //如果获取异常 则执行销毁
                         params.forEach(p => p.inteceptor?.destoryBean(p.bean));
@@ -192,7 +238,7 @@ class MethodRouter {
 
             //1.处理参数反射阶段
             try{
-                params = await this.getInvokeParams(req);
+                params = await this.getInvokeParams(req,res);
             }catch(e){
                return wrapHandler(400,e);
             }

@@ -27,7 +27,7 @@ export interface SpringMvcParamInteceptor<T> {
     getAnnotation():Function;
 
     //导出bean
-    getBean(req:any,paramterAnnotation:Anntation):Promise<T>;
+    getBean(req:any,res:any,paramterAnnotation:Anntation):Promise<T> | T;
 
     //访问结束时  如何销毁bean
     destoryBean(bean:T):void;
