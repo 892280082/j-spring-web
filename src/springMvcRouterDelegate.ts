@@ -149,7 +149,14 @@ class MethodRouter {
                 const an:Anntation =  paramterDefine.annotationList[ai];
                 const pi = paramInterceptor.find(pi => pi.getAnnotation() === an.clazz)
                 if(pi){
-                    const bean =  await pi.getBean(req,an);
+                    let bean;
+                    try{
+                        bean =  await pi.getBean(req,an);
+                    }catch(e){
+                        //如果获取异常 则执行销毁
+                        params.forEach(p => p.inteceptor?.destoryBean(p.bean));
+                        throw e;
+                    }
                     params[paramterDefine.index] = {bean,inteceptor:pi};
                 }
             }
