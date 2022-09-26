@@ -2,6 +2,9 @@ import { Component, Value } from 'j-spring';
 import path from 'path';
 import { ExpressConfiguration } from './springMvcExtends'
 import {errorInfo,SpringMvcExceptionHandler} from './springMvcExtends'
+import session from 'express-session'
+
+
 /**
  * ejs页面配置
  */
@@ -11,8 +14,11 @@ export class EjsViewConfigruation implements ExpressConfiguration {
     @Value({path:'root',type:String})
     root:string;
 
+    @Value({path:'express.viewPath',type:String,force:false})
+    viewPath:string = 'view';
+
     load(app: any): void {
-        app.set('views', path.join(this.root,'view'));
+        app.set('views', path.join(this.root,this.viewPath));
         app.set('view engine', 'ejs');
     }
     
@@ -21,6 +27,29 @@ export class EjsViewConfigruation implements ExpressConfiguration {
     }
 
 }
+
+/** express 内存-session 仅适用于开发模式 */
+@Component
+export class ExpressMemorySessionConfiguration implements ExpressConfiguration {
+
+    @Value({path:'express.session.secret',type:String,force:false})
+    secret:string = 'kity';
+    @Value({path:'express.session.maxAge',type:Number,force:false})
+    maxAge:number = 60000;
+
+    load(app: any): void {
+        app.use(session({
+            secret:this.secret,
+            cookie:{
+                maxAge:this.maxAge
+            }
+        }))
+    }
+    isExpressConfiguration(): boolean {
+        return true;
+    }
+}
+
 
 /**
  * 默认异常处理
@@ -34,3 +63,4 @@ export class SpringMvcExceptionHandlerConfigration implements SpringMvcException
     }
 
 }
+

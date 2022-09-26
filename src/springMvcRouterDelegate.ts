@@ -1,8 +1,8 @@
-import { Anntation, assemble, BeanDefine, MethodDefine } from "j-spring";
+import { Anntation, assemble, BeanDefine, Clazz, getBeanDefineByClass, MethodDefine } from "j-spring";
 import path from "path";
-import { Controller, ControllerParam, Get, GetParam, Json,ResponseBody,ParamterParamType, PathVariable, Post, PostParam, RequestMapping, RequestMappingParam, RequestParam, MiddleWare, MiddleWareParam, ExpressMiddleWare } from "./springMvcAnnotation";
+import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam } from "./springMvcAnnotation";
 import {ExpressLoad,SpringMvcParamInteceptor,SpringMvcExceptionHandler} from './springMvcExtends'
-
+import {middleWareType} from './springMvcAnnotation'
 //参数处理器
 export const paramInterceptor:SpringMvcParamInteceptor<any>[] = [];
 
@@ -97,20 +97,18 @@ class MethodRouter {
     
     private resolveReqPath():string {
         const {bd,md} = this.option;
-        const ctrPath = (bd.getAnnotation(Controller)?.params as ControllerParam).path;
+        const ctrParam = bd.getAnnotation(Controller)?.params as MappingParam;
+        const ctrPath = ctrParam.path;
+        const ctrMiddleWare = ctrParam.middleWareClassList || [];
         if(isEmpty(ctrPath)){
             this.error('resolveReqPath @Controller path not to be empty')
         }
-        let mdPath:string ='';
-        if(this.hasRequestMapping){
-            mdPath = ((md.getAnnotation(RequestMapping)?.params as RequestMappingParam).path)
-        }else if(this.hasGet){
-            mdPath = ((md.getAnnotation(Get)?.params as GetParam).path)
-        }else if(this.hasPost){
-            mdPath = ((md.getAnnotation(Post)?.params as PostParam).path)
-        }
-        if(!mdPath || isEmpty(mdPath))
-            mdPath = md.name;
+
+        const mp = (md.getAnnotation(Get) || md.getAnnotation(Post) || md.getAnnotation(RequestMapping))?.params as MappingParam
+        const mdPath = mp.path || md.name;
+        const methodMiddleWare = mp.middleWareClassList || [];
+        const temp = [...ctrMiddleWare,...methodMiddleWare];
+        this.middleWareFunction = Array.from(new Set<Function>(temp)); 
         return  path.join(ctrPath,mdPath).replace(/\\/g,`/`);
     }
 
@@ -123,15 +121,16 @@ class MethodRouter {
     }
 
     private resolveMiddleWareFunction():Function[]{
-        const {md} = this.option;
-        const middleWareAnno = md.getAnnotation(MiddleWare)
-        if(!middleWareAnno)
-            return [];
-        return (middleWareAnno.params as MiddleWareParam).middleWareClassList.map(assemble).map(bean => {
-            const invoke = (bean as ExpressMiddleWare).invoke;
-            invoke.bind(bean);
-            return invoke;
-        })
+        
+        return this.middleWareFunction.map(clazz => {
+            if(getBeanDefineByClass(clazz as Clazz)){
+                const bean = assemble(clazz as Clazz);
+                const invoke = (bean as ExpressMiddleWare).invoke;
+                invoke.bind(bean);
+                return invoke;
+            }
+            return  clazz;
+        });
     }
 
     async getInvokeParams(req:any):Promise<paramContainer[]>{

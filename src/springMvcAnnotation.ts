@@ -1,42 +1,34 @@
 import {spring} from 'j-spring'
 import { isFunction } from "j-spring";
 
-//类 控制器注解
-export type ControllerParam = {
-    path:string
+export type middleWareType = ((new()=>ExpressMiddleWare) | Function)[];
+
+export type MappingParam = {
+    path:string,
+    middleWareClassList?:middleWareType
 }
-export const Controller = (path:string) => spring.classAnnotationGenerator('j-spring.Controller',{path},Controller);
+
+
+export const Controller = (path:string,middleWareClassList?:middleWareType) => spring.classAnnotationGenerator('j-spring.Controller',{path,middleWareClassList},Controller);
 
 
 //类 发送json控制器
-export const Json = spring.classAnnotationGenerator('j-spring.Controller',{});
+export const Json = ()=> spring.classAnnotationGenerator('j-spring.Controller',{},Json);
 
 
 //方法控制器 get请求
 
-export type GetParam = {
-    path:string
-}
+export const Get = (path?:string,middleWareClassList?:middleWareType) => spring.methodAnnotationGenerator('j-spring.Get',{path,middleWareClassList},Get);
 
-export const Get = (path?:string) => spring.methodAnnotationGenerator('j-spring.Get',{path},Get);
-
-export const ResponseBody = spring.methodAnnotationGenerator('j-spring.ResponseBody',{});
+export const ResponseBody = () => spring.methodAnnotationGenerator('j-spring.ResponseBody',{},ResponseBody);
 
 //方法控制器 Post请求
 
-export type PostParam = {
-    path:string
-}
-
-export const Post = (path?:string) => spring.methodAnnotationGenerator('j-spring.Post',{path},Post);
+export const Post = (path?:string,middleWareClassList?:middleWareType) => spring.methodAnnotationGenerator('j-spring.Post',{path,middleWareClassList},Post);
 
 //方法控制器 RequestMapping
 
-export type RequestMappingParam = {
-    path:string
-}
-
-export const RequestMapping = (path?:string) => spring.methodAnnotationGenerator('j-spring.RequestMapping',{path},RequestMapping);
+export const RequestMapping = (path?:string,middleWareClassList?:middleWareType) => spring.methodAnnotationGenerator('j-spring.RequestMapping',{path,middleWareClassList},RequestMapping);
 
 
 export type ParamterParamType = {
@@ -56,10 +48,7 @@ export function isExpressMiddleWare(obj:any){
     return isFunction(a.invoke) && isFunction(a.isExpressMidldleWare) && a.isExpressMidldleWare();
 }
 
-export type MiddleWareParam = {
-    middleWareClassList:(new()=>ExpressMiddleWare)[]
-}
-export const MiddleWare = (middleWareClassList:(new()=>ExpressMiddleWare)[]) => spring.methodAnnotationGenerator('j-spring.ExpressMiddleWare',{middleWareClassList},MiddleWare);
+
 
 
 //字段

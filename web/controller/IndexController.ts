@@ -3,7 +3,6 @@ import {Controller,Json,Get, Post, RequestMapping, PathVariable, RequestParam} f
 
 
 @Controller('/')
-@Json
 export class IndexController {
 
     @Value({path:'indexMsg',type:String})

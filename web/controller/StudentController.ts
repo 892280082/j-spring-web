@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
 import { Component } from "j-spring";
 import { ParsedQs } from "qs";
-import { Controller, ExpressMiddleWare, Get, Json, MiddleWare, PathVariable, RequestParam, ResponseBody } from "../../src";
+import { Controller, ExpressMiddleWare, Get, Json, PathVariable, RequestParam, ResponseBody } from "../../src";
 
 
 @Component
@@ -20,7 +20,7 @@ class LogPrintMiddleWare implements ExpressMiddleWare{
 }
 
 
-@Controller('/student')
+@Controller('/student',[LogPrintMiddleWare])
 export class StudentController {
 
 
@@ -31,8 +31,7 @@ export class StudentController {
 
 
     @Get('/getStudentInfo/:id')
-    @ResponseBody
-    @MiddleWare([LogPrintMiddleWare])
+    @ResponseBody()
     async getStudentInfo(@PathVariable('id') id:string,@RequestParam('name') name:string){
         return {id,name}
     }
