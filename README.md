@@ -1,103 +1,211 @@
-# TSDX User Guide
+源码:[j-spring](https://github.com/892280082/j-spring) 轻量级的IOC库.
+源码:[j-spring-mvc](https://github.com/892280082/j-spring-mvc) 基于j-spring和express的WEB框架。
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+# 前言
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+j-spring-mvc就是换了壳的express，这个项目并没有重复创建轮子，只是对喜欢express的人提供了更多的选择。对于java程序员，肯定能闻到熟悉的配方和味道。
 
-## Commands
 
-TSDX scaffolds your new library inside `/src`.
+# 设计思路
 
-To run TSDX, use:
+## 1.底层框架选用
 
-```bash
-npm start # or yarn start
+对于Node上面的WEB框架，我最喜欢的还是Express。
+
+优点：
+- 简单高效，并且具有函数式的美感。
+- 生态丰富，拥有大量高质量的插件！
+- 框架稳定，几乎没有坑。
+
+缺点： 
+
+- 逼格有点低，划重点。
+- 不支持IOC和AOP
+- 并且模块化不强，写起来散乱。
+- 代码层面有美感，但是对于业务抽象描述能力不够。
+
+## 2.优化方案
+
+j-spring 提供IOC和AOP的能力，把express进行模块化的封装。
+
+- 配置方面：定义ExpressConfiguration接口，提升模块化配置能力。
+- 路由方面：定义@controller然后利用后置处理器进行解析，装配进express中
+
+# 代码实现
+代码会在过后的几个章节进行描述，其实也不多，毕竟只是加了一层壳。
+
+
+# 代码展现
+
+## 1.启动配置
+```js
+
+//1.springmvc 配置
+const SpringMvcModule = [
+    SpringMvcStarter, //web启动器
+    ExpressAppEnhanceBeanProcessor, // express配置后置处理器
+    ControllerBeanProcessor, // 控制器后置处理器
+    SpringParamterBeanPostProcessor]; // 参数反射后置处理器 用于处理@RequestPram之类的
+
+//2.express 配置
+const springMvcConfig = [
+    EjsViewConfigruation,// ejs视图配置
+    ExpressMemorySessionConfiguration // 内存session配置
+]
+
+//3.控制器
+const controllerClassList = [
+    StudentController, //学生路由控制器
+    XiaoAiController //测试
+]
+
+
+spring.bindModule([
+    SpringMvcModule,
+    springMvcConfig,
+    controllerClassList])
+    .loadConfig({'indexMsg':'j-spring','root':__dirname}) //加载配置 
+    .invokeStarter();//调用启动器
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+这里看到配置很多，主要是为了展示整个运行过程。其实1和2都可以放到j-spring-mvc里面作为默认配置一把到导出的。
+例如
+```js
+const SpringMvcBaseModule = [...SpringMvcModule,...springMvcConfig]
 
-To do a one-off build, use `npm run build` or `yarn build`.
-
-To run tests, use `npm test` or `yarn test`.
-
-## Configuration
-
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
-
-### Jest
-
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-### Bundle Analysis
-
-[`size-limit`](https://github.com/ai/size-limit) is set up to calculate the real cost of your library with `npm run size` and visualize the bundle with `npm run analyze`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
+spring.bindModule([SpringMvcBaseModule,controllerClassList]).loadConfig({...}).invokeStarter();
 ```
 
-### Rollup
+如果需要更换其中一个配置，就只需要使用j-spring的repalceClass方法即可。例如将session交由mysql存储，更换指定配置即可。
 
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
-
-### TypeScript
-
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
 
 ```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
+spring.bindModule([SpringMvcBaseModule,controllerClassList])
+    .replaceClass(ExpressMemorySessionConfiguration,ExpressMysqlSeesionConfiguration) //更换依赖即可
+```
 
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
+## 2.如何定义express配置
+只要继承ExpressConfiguration接口即可。这样该配置就可以使用j-spring容器的能力，包括自动注入和装配。你可以写无限多个配置类，然后统一在yaml里面编写配置参数即可。
+```js
+/**
+ * ejs页面配置
+ */
+@Component
+export class EjsViewConfigruation implements ExpressConfiguration {
+
+    @Value({path:'root',type:String})
+    root:string;
+
+    @Value({path:'express.viewPath',type:String,force:false})
+    viewPath:string = 'view';
+
+    load(app: any): void {
+        app.set('views', path.join(this.root,this.viewPath));
+        app.set('view engine', 'ejs');
+    }
+    
+    isExpressConfiguration(): boolean {
+        return true;
+    }
+
+}
+//spring.bind(EjsViewConfigruation) 即可
+```
+
+## 3.设置路由
+是不是熟悉的味道，嘿嘿。最大程度的还原了springMvc的编码风格。
+- 页面渲染就是返回一个数组 [页面路径，渲染数据]
+- @ResponseBody就单纯返回json信息。
+- @PathVariable @RequestParam 跟java一致
+- @Param(key:string) 拿到express控制器原始的req,res对象
+- 这里的参数反射是支持异步的，并且可以在请求结束后，执行销毁操作。主要为了后期的事务操作。
+```js
+//定义控制器
+@Controller('/student')
+export class StudentController {
+
+    @Autowired({clazz:StudentServiceImpl})
+    service:StudentService;
+
+    //页面渲染
+    @Get()
+    async index(){
+        return ['index.ejs',{msg:'hello world'}]
+    }
+
+    //接口返回
+    @Get('/getStudentInfo/:id')
+    @ResponseBody()
+    async getStudentInfo(
+        @PathVariable('id') id:string,
+        @RequestParam('name') name:string){
+        return {id,name}
+    }
+
+
+    @Get()
+    @ResponseBody()
+    async addSessionName(@Param('session') session:any){
+        session['name'] = 'xiaoAi'
+        return {msg:'add success!'}
+    }
+
+}
+
+```
+
+## 4.如何使用中间件
+```js
+//定义中间件1
+@Component
+class XiaoAiMustBeExist implements ExpressMiddleWare {
+    isExpressMidldleWare(): boolean {
+        return true;
+    }
+    invoke(req: any, res: any, next: Function): void {
+        if(! req.session?.name){
+            throw `xiaoai must be exist!`
+        }
+        next();
+    }
+    
+}
+
+//定义中间件2
+@Component
+class OtherMiddleWare implements ExpressMiddleWare {...}
+
+@Controller('xiaoai')
+@ApiMiddleWare([XiaoAiMustBeExist])
+export class XiaoAiController {
+
+    @Get()
+    @ResponseBody()
+    @MiddleWare([OtherMiddleWare])
+    async getXiaoAiName(@SessionAttribute('name') name:string){
+        return {name}
+    }
+
+
 }
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+- 使用ExpressMiddleWare接口创建中间件.
+- 使用@ApiMiddleWare 添加中间件到控制器的类上，可以作用于该控制器所有的方法。（常用如拦截器）
+- 使用@MiddleWare也可以将中间件单独添加到方法上。
+- @ApiMiddleWare + @MiddleWare 可以混合使用，执行顺序以定义顺序为准。
 
-## Module Formats
 
-CJS, ESModules, and UMD module formats are supported.
+# 总结 
+到这里j-spring-mvc就完成了，因为底层还是express，所以运行的还是相当稳定的。
 
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
+j-spring-mvc包含了的优点以及优化了不足。
 
-## Named Exports
-
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
-
-## Including Styles
-
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
-
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
-
-## Publishing to NPM
-
-We recommend using [np](https://github.com/sindresorhus/np).
+- 简单高效，并且具有函数式的美感。（express）
+- 生态丰富，拥有大量高质量的插件！ （express）
+- 框架稳定，几乎没有坑。（express）
+- 支持IOC和AOP （j-spring）
+- 支持模块化 (j-spring)
+- 代码层面有美感 
+- 业务抽象描述能力强
