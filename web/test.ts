@@ -1,12 +1,13 @@
 import { spring } from 'j-spring';
-import { SpringMvcModule,EjsViewConfigruation,ExpressMemorySessionConfiguration } from '../src'
+import { SpringMvcModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration } from '../src'
 import { IndexController } from "./controller/IndexController";
 import { StudentController,XiaoAiController } from './controller/StudentController'
 
 //springmvc 配置
 const springMvcConfig = [
     EjsViewConfigruation,
-    ExpressMemorySessionConfiguration
+    ExpressMemorySessionConfiguration,
+    BodyParseConfiguration
 ]
 
 //请求控制器

@@ -3,6 +3,7 @@ import path from 'path';
 import { ExpressConfiguration } from './springMvcExtends'
 import {errorInfo,SpringMvcExceptionHandler} from './springMvcExtends'
 import session from 'express-session'
+import bodyParser from 'body-parser'
 
 
 /**
@@ -50,6 +51,19 @@ export class ExpressMemorySessionConfiguration implements ExpressConfiguration {
     }
 }
 
+@Component
+export class BodyParseConfiguration implements ExpressConfiguration {
+    load(app: any): void {
+        // parse application/x-www-form-urlencoded
+        app.use(bodyParser.urlencoded({ extended: false }))
+        // parse application/json
+        app.use(bodyParser.json())
+    }
+    isExpressConfiguration(): boolean {
+        return true;        
+    }
+
+}
 
 /**
  * 默认异常处理
