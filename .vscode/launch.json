@@ -9,7 +9,7 @@
             "type": "node",
             "request": "launch",
             "args": [
-                "./web/test.ts"
+                "./web/app.ts"
             ],
             "runtimeArgs": [
                 "-r",
