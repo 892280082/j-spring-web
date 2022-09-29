@@ -2,9 +2,35 @@
 源码:[j-spring-web](https://github.com/892280082/j-spring-web) 基于j-spring和express的WEB框架。
 
 
+
 # 前言
 
 j-spring-web就是换了壳的express，这个项目并没有重复创建轮子，只是对喜欢express的人提供了更多的选择。对于java程序员，肯定能闻到熟悉的配方和味道。
+
+
+```js
+import { spring,Component } from 'j-spring'
+import {SpringMvcModule,Controller, Get, ResponseBody} from 'j-spring-mvc'
+import { errorInfo } from 'j-spring-mvc/dist/springMvcExtends';
+
+//控制器
+@Controller('/api')
+class ApiController {
+
+    @Get()
+    @ResponseBody()
+    async hello(){
+        throw 'requst error'
+        return {msg:'hello'}
+    }
+
+}
+
+//控制器集合
+const controllerList = [ApiController]
+
+spring.bindModule([SpringMvcModule,controllerList]).invokeStarter();
+```
 
 
 # 设计思路
