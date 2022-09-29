@@ -1,4 +1,3 @@
-import { Request } from "express";
 import { Anntation, assemble, BeanDefine, Clazz, getBeanDefineByClass, MethodDefine } from "j-spring";
 import path from "path";
 import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam, Param,SessionAttribute, ApiMiddleWare, MiddleWareParam, MiddleWare } from "./springMvcAnnotation";
@@ -311,7 +310,7 @@ export class ControllerBeanConfiguration implements ExpressLoad {
         //注册所有路由
         this.methodRouter.forEach(m => m.loadExpressApp(_app))
         //注册错误处理路由
-        _app.use((err:any,req:Request,res:any,next:Function) => {
+        _app.use((err:any,req:any,res:any,next:Function) => {
 
             this.exceptionHandler().hanlder(req,res,{code:req.statusCode || 500,sendType:'get',error:err},next)
 
