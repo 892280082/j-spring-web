@@ -1,12 +1,12 @@
 import { Anntation, assemble, BeanDefine, Clazz, getBeanDefineByClass, MethodDefine } from "j-spring";
 import path from "path";
-import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam, Param,SessionAttribute, ApiMiddleWare, MiddleWareParam, MiddleWare } from "./springMvcAnnotation";
-import {ExpressLoad,SpringMvcParamInteceptor,SpringMvcExceptionHandler} from './springMvcExtends'
+import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam, Param,SessionAttribute, ApiMiddleWare, MiddleWareParam, MiddleWare } from "./springWebAnnotation";
+import {ExpressLoad,SpringWebParamInteceptor,SpringWebExceptionHandler} from './springWebExtends'
 //参数处理器
-export const paramInterceptor:SpringMvcParamInteceptor<any>[] = [];
+export const paramInterceptor:SpringWebParamInteceptor<any>[] = [];
 
 type paramContainer = {
-    inteceptor:SpringMvcParamInteceptor<any>|undefined,
+    inteceptor:SpringWebParamInteceptor<any>|undefined,
     bean:any
 }
 
@@ -14,13 +14,13 @@ type MethodRouterParm = {
     bean:any,
     bd:BeanDefine,
     md:MethodDefine
-    exceptionHandler:()=>SpringMvcExceptionHandler
+    exceptionHandler:()=>SpringWebExceptionHandler
 }
 
 
 //query拦截器
-class RequestParamParamInteceptor implements SpringMvcParamInteceptor<any> {
-    isSpringMvcParamInteceptor(): boolean {
+class RequestParamParamInteceptor implements SpringWebParamInteceptor<any> {
+    isSpringWebParamInteceptor(): boolean {
         return true;
     }
     getAnnotation(): Function {
@@ -35,8 +35,8 @@ class RequestParamParamInteceptor implements SpringMvcParamInteceptor<any> {
 }
 
 //params拦截器
-class PathVariableParamInteceptor implements SpringMvcParamInteceptor<any> {
-    isSpringMvcParamInteceptor(): boolean {
+class PathVariableParamInteceptor implements SpringWebParamInteceptor<any> {
+    isSpringWebParamInteceptor(): boolean {
         return true;
     }
     getAnnotation(): Function {
@@ -50,8 +50,8 @@ class PathVariableParamInteceptor implements SpringMvcParamInteceptor<any> {
     }
 }
 
-class ParamInteceptor implements SpringMvcParamInteceptor<any> {
-    isSpringMvcParamInteceptor(): boolean {
+class ParamInteceptor implements SpringWebParamInteceptor<any> {
+    isSpringWebParamInteceptor(): boolean {
         return true;
     }
     getAnnotation(): Function {
@@ -72,8 +72,8 @@ class ParamInteceptor implements SpringMvcParamInteceptor<any> {
     
 }
 
-class SessionAttributeInteceptor implements SpringMvcParamInteceptor<any> {
-    isSpringMvcParamInteceptor(): boolean {
+class SessionAttributeInteceptor implements SpringWebParamInteceptor<any> {
+    isSpringWebParamInteceptor(): boolean {
         return true;
     }
     getAnnotation(): Function {
@@ -295,7 +295,7 @@ export class ControllerBeanConfiguration implements ExpressLoad {
     methodRouter:MethodRouter[] = [];
     
 
-    constructor(public bean:any,public bd:BeanDefine,public exceptionHandler:()=>SpringMvcExceptionHandler){
+    constructor(public bean:any,public bd:BeanDefine,public exceptionHandler:()=>SpringWebExceptionHandler){
 
         bd.methodList.filter(hasTargetAnnotation).forEach(md => {
 

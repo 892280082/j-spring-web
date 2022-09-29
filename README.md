@@ -1,10 +1,10 @@
 源码:[j-spring](https://github.com/892280082/j-spring) 轻量级的IOC库.
-源码:[j-spring-mvc](https://github.com/892280082/j-spring-mvc) 基于j-spring和express的WEB框架。
+源码:[j-spring-web](https://github.com/892280082/j-spring-web) 基于j-spring和express的WEB框架。
 
 
 # 前言
 
-j-spring-mvc就是换了壳的express，这个项目并没有重复创建轮子，只是对喜欢express的人提供了更多的选择。对于java程序员，肯定能闻到熟悉的配方和味道。
+j-spring-web就是换了壳的express，这个项目并没有重复创建轮子，只是对喜欢express的人提供了更多的选择。对于java程序员，肯定能闻到熟悉的配方和味道。
 
 
 # 设计思路
@@ -41,15 +41,15 @@ j-spring 提供IOC和AOP的能力，把express进行模块化的封装。
 ## 1.启动配置
 ```js
 
-//1.springmvc 配置
-const SpringMvcModule = [
-    SpringMvcStarter, //web启动器
+//1.SpringWeb 配置
+const SpringWebModule = [
+    SpringWebStarter, //web启动器
     ExpressAppEnhanceBeanProcessor, // express配置后置处理器
     ControllerBeanProcessor, // 控制器后置处理器
     SpringParamterBeanPostProcessor]; // 参数反射后置处理器 用于处理@RequestPram之类的
 
 //2.express 配置
-const springMvcConfig = [
+const springWebConfig = [
     EjsViewConfigruation,// ejs视图配置
     ExpressMemorySessionConfiguration // 内存session配置
 ]
@@ -62,26 +62,26 @@ const controllerClassList = [
 
 
 spring.bindModule([
-    SpringMvcModule,
-    springMvcConfig,
+    SpringWebModule,
+    springWebConfig,
     controllerClassList])
     .loadConfig({'indexMsg':'j-spring','root':__dirname}) //加载配置 
     .invokeStarter();//调用启动器
 ```
 
-这里看到配置很多，主要是为了展示整个运行过程。其实1和2都可以放到j-spring-mvc里面作为默认配置一把到导出的。
+这里看到配置很多，主要是为了展示整个运行过程。其实1和2都可以放到j-spring-web里面作为默认配置一把到导出的。
 例如
 ```js
-const SpringMvcBaseModule = [...SpringMvcModule,...springMvcConfig]
+const SpringWebBaseModule = [...SpringWebModule,...springWebConfig]
 
-spring.bindModule([SpringMvcBaseModule,controllerClassList]).loadConfig({...}).invokeStarter();
+spring.bindModule([SpringWebBaseModule,controllerClassList]).loadConfig({...}).invokeStarter();
 ```
 
 如果需要更换其中一个配置，就只需要使用j-spring的repalceClass方法即可。例如将session交由mysql存储，更换指定配置即可。
 
 
 ```js
-spring.bindModule([SpringMvcBaseModule,controllerClassList])
+spring.bindModule([SpringWebBaseModule,controllerClassList])
     .replaceClass(ExpressMemorySessionConfiguration,ExpressMysqlSeesionConfiguration) //更换依赖即可
 ```
 
@@ -114,7 +114,7 @@ export class EjsViewConfigruation implements ExpressConfiguration {
 ```
 
 ## 3.设置路由
-是不是熟悉的味道，嘿嘿。最大程度的还原了springMvc的编码风格。
+是不是熟悉的味道，嘿嘿。最大程度的还原了springWeb的编码风格。
 - 页面渲染就是返回一个数组 [页面路径，渲染数据]
 - @ResponseBody就单纯返回json信息。
 - @PathVariable @RequestParam 跟java一致
@@ -198,9 +198,9 @@ export class XiaoAiController {
 
 
 # 总结 
-到这里j-spring-mvc就完成了，因为底层还是express，所以运行的还是相当稳定的。
+到这里j-spring-web就完成了，因为底层还是express，所以运行的还是相当稳定的。
 
-j-spring-mvc包含了的优点以及优化了不足。
+j-spring-web包含了的优点以及优化了不足。
 
 - 简单高效，并且具有函数式的美感。（express）
 - 生态丰富，拥有大量高质量的插件！ （express）

@@ -1,19 +1,19 @@
-import { ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor,SpringParamterBeanPostProcessor } from "./springMvcBeanProcessor";
-import { SpringMvcStarter } from './springMvcContainer'
+import { ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor,SpringParamterBeanPostProcessor } from "./springWebBeanProcessor";
+import { SpringWebStarter } from './springWebContainer'
 
-export { SpringMvcExceptionHandler,SpringMvcParamInteceptor,isSpringMvcParamInteceptor,isSpringMvcExceptionHandler } from './springMvcExtends'
-export * from './springMvcConfiguration'
-export * from './springMvcAnnotation'
+export { SpringWebExceptionHandler,SpringWebParamInteceptor,isSpringWebParamInteceptor,isSpringWebExceptionHandler } from './springWebExtends'
+export * from './springWebConfiguration'
+export * from './springWebAnnotation'
 
 
 
 /**
- * SpringMvcStarter web启动器
+ * SpringWebStarter web启动器
  * ExpressAppEnhanceBeanProcessor ExpressConfiguration的后置处理器
  * ControllerBeanProcessor controller的后置处理器
  */
-export const SpringMvcModule = [
-    SpringMvcStarter,
+export const SpringWebModule = [
+    SpringWebStarter,
     ExpressAppEnhanceBeanProcessor,
     ControllerBeanProcessor,
     SpringParamterBeanPostProcessor];

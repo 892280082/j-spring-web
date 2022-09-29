@@ -1,5 +1,5 @@
 import { spring, Value } from 'j-spring';
-import {Controller,Json,Get, Post, RequestMapping, PathVariable, RequestParam} from '../../src/springMvcAnnotation'
+import {Controller,Json,Get, Post, RequestMapping, PathVariable, RequestParam} from '../../src/springWebAnnotation'
 
 
 @Controller('/')

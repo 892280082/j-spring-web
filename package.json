@@ -1,5 +1,5 @@
 {
-  "version": "1.9.3",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -30,11 +30,11 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "j-spring-mvc",
+  "name": "j-spring-web",
   "author": "yeqin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/892280082/j-spring-mvc.git"
+    "url": "https://github.com/892280082/j-spring-web.git"
   },
   "module": "dist/springapp.esm.js",
   "size-limit": [

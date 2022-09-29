@@ -1,9 +1,9 @@
 import { Autowired, BeanDefine, BeanPostProcessor, Component } from "j-spring";
-import { Controller } from "./springMvcAnnotation";
-import {ControllerBeanConfiguration,paramInterceptor} from './springMvcRouterDelegate'
-import { ExpressLoad,isExpressConfiguration,SpringMvcExceptionHandler,isSpringMvcExceptionHandler} from './springMvcExtends'
-import { SpringMvcExceptionHandlerConfigration } from './springMvcConfiguration'
-import {isSpringMvcParamInteceptor} from './springMvcExtends'
+import { Controller } from "./springWebAnnotation";
+import {ControllerBeanConfiguration,paramInterceptor} from './springWebRouterDelegate'
+import { ExpressLoad,isExpressConfiguration,SpringWebExceptionHandler,isSpringWebExceptionHandler} from './springWebExtends'
+import { SpringWebExceptionHandlerConfigration } from './springWebConfiguration'
+import {isSpringWebParamInteceptor} from './springWebExtends'
 
 //解析的bean集合
 const configureBeanList = new Set<ExpressLoad>();
@@ -56,8 +56,8 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 export class ControllerBeanProcessor implements BeanPostProcessor {
 
 
-    @Autowired({type:isSpringMvcExceptionHandler,force:false})
-    exceptionHanlder:SpringMvcExceptionHandler = new SpringMvcExceptionHandlerConfigration();
+    @Autowired({type:isSpringWebExceptionHandler,force:false})
+    exceptionHanlder:SpringWebExceptionHandler = new SpringWebExceptionHandlerConfigration();
 
     getSort(): number {
         return 100;
@@ -92,7 +92,7 @@ export class SpringParamterBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
     postProcessAfterInitialization(bean: any, _beanDefine: BeanDefine): Object {
-        if(isSpringMvcParamInteceptor(bean)){
+        if(isSpringWebParamInteceptor(bean)){
             paramInterceptor.push(bean);
         }
         return bean;

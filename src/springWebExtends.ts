@@ -19,9 +19,9 @@ export function isExpressConfiguration(bean:any){
 
 
 //参数拦截操作操作
-export interface SpringMvcParamInteceptor<T> {
+export interface SpringWebParamInteceptor<T> {
 
-    isSpringMvcParamInteceptor():boolean;
+    isSpringWebParamInteceptor():boolean;
 
     //获取注解
     getAnnotation():Function;
@@ -34,13 +34,13 @@ export interface SpringMvcParamInteceptor<T> {
 
 }
 
-export function isSpringMvcParamInteceptor(bean:any){
-    const t = bean as SpringMvcParamInteceptor<any>;
+export function isSpringWebParamInteceptor(bean:any){
+    const t = bean as SpringWebParamInteceptor<any>;
     return isFunction(t.getAnnotation) && 
             isFunction(t.getBean) && 
             isFunction(t.destoryBean) && 
-            isFunction(t.isSpringMvcParamInteceptor) 
-            && t.isSpringMvcParamInteceptor();
+            isFunction(t.isSpringWebParamInteceptor) 
+            && t.isSpringWebParamInteceptor();
 }
 
 //错误信息
@@ -50,17 +50,17 @@ export type errorInfo = {
     sendType:string
 }
 
-//springmvc 异常处理
-export interface SpringMvcExceptionHandler {
+//SpringWeb 异常处理
+export interface SpringWebExceptionHandler {
 
-    isSpringMvcExceptionHandler():boolean;
+    isSpringWebExceptionHandler():boolean;
 
     //异常处理
     hanlder(req:any,res:any,errorInfo:errorInfo,next?:Function):void;
 
 }
 
-export function isSpringMvcExceptionHandler(bean:any):boolean{
-    const t= bean as SpringMvcExceptionHandler;
-    return isFunction(t.hanlder) && isFunction(t.isSpringMvcExceptionHandler) && t.isSpringMvcExceptionHandler();
+export function isSpringWebExceptionHandler(bean:any):boolean{
+    const t= bean as SpringWebExceptionHandler;
+    return isFunction(t.hanlder) && isFunction(t.isSpringWebExceptionHandler) && t.isSpringWebExceptionHandler();
 }

@@ -1,7 +1,7 @@
 import { Component, Value } from 'j-spring';
 import path from 'path';
-import { ExpressConfiguration } from './springMvcExtends'
-import {errorInfo,SpringMvcExceptionHandler} from './springMvcExtends'
+import { ExpressConfiguration } from './springWebExtends'
+import {errorInfo,SpringWebExceptionHandler} from './springWebExtends'
 import session from 'express-session'
 import bodyParser from 'body-parser'
 
@@ -68,8 +68,8 @@ export class BodyParseConfiguration implements ExpressConfiguration {
 /**
  * 默认异常处理
  */
-export class SpringMvcExceptionHandlerConfigration implements SpringMvcExceptionHandler {
-    isSpringMvcExceptionHandler(): boolean {
+export class SpringWebExceptionHandlerConfigration implements SpringWebExceptionHandler {
+    isSpringWebExceptionHandler(): boolean {
         return true;
     }
 

@@ -1,9 +1,9 @@
 import express from "express";
 import { Component, Value,SpringStarter } from "j-spring";
-import {loadConfiguration} from './springMvcBeanProcessor'
+import {loadConfiguration} from './springWebBeanProcessor'
 
 @Component
-export class SpringMvcStarter implements SpringStarter{
+export class SpringWebStarter implements SpringStarter{
 
     @Value({path:'j-spring.port',type:Number,force:false})
     port = 3000;

@@ -1,12 +1,12 @@
 import { Component, spring } from 'j-spring';
-import { SpringMvcModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration,SpringMvcExceptionHandler } from '../src'
-import { errorInfo } from '../src/springMvcExtends';
+import { SpringWebModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration,SpringWebExceptionHandler } from '../src'
+import { errorInfo } from '../src/springWebExtends';
 import { IndexController } from "./controller/IndexController";
 import { StudentController,XiaoAiController } from './controller/StudentController'
 
 @Component
-class CustomSpringMvcExceptionHandler implements SpringMvcExceptionHandler {
-    isSpringMvcExceptionHandler(): boolean {
+class CustomSpringWebExceptionHandler implements SpringWebExceptionHandler {
+    isSpringWebExceptionHandler(): boolean {
         return true;
     }
     hanlder(req: any, res: any, errorInfo: errorInfo): void {
@@ -16,12 +16,12 @@ class CustomSpringMvcExceptionHandler implements SpringMvcExceptionHandler {
     
 }
 
-//springmvc 配置
-const springMvcConfig = [
+//SpringWeb 配置
+const springWebConfig = [
     EjsViewConfigruation,
     ExpressMemorySessionConfiguration,
     BodyParseConfiguration,
-    CustomSpringMvcExceptionHandler
+    CustomSpringWebExceptionHandler
 ]
 
 //请求控制器
@@ -32,7 +32,7 @@ const controllerClassList = [
 ]
 
 
-spring.bindModule([SpringMvcModule,springMvcConfig,controllerClassList]).loadConfig({'indexMsg':'j-spring','root':__dirname}).invokeStarter();
+spring.bindModule([SpringWebModule,springWebConfig,controllerClassList]).loadConfig({'indexMsg':'j-spring','root':__dirname}).invokeStarter();
 
 
 
