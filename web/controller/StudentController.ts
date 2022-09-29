@@ -32,6 +32,12 @@ export class StudentController {
         return {msg:'add success!'}
     }
 
+
+    @Get()
+    async toError(){
+        throw 'xxxx';
+    }
+
 }
 
 

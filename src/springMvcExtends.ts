@@ -53,7 +53,14 @@ export type errorInfo = {
 //springmvc 异常处理
 export interface SpringMvcExceptionHandler {
 
-    //异常处理
-    hanlder(req:any,res:any,errorInfo:errorInfo):void;
+    isSpringMvcExceptionHandler():boolean;
 
+    //异常处理
+    hanlder(req:any,res:any,errorInfo:errorInfo,next?:Function):void;
+
+}
+
+export function isSpringMvcExceptionHandler(bean:any):boolean{
+    const t= bean as SpringMvcExceptionHandler;
+    return isFunction(t.hanlder) && isFunction(t.isSpringMvcExceptionHandler) && t.isSpringMvcExceptionHandler();
 }

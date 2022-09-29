@@ -68,8 +68,10 @@ export class BodyParseConfiguration implements ExpressConfiguration {
 /**
  * 默认异常处理
  */
-@Component
 export class SpringMvcExceptionHandlerConfigration implements SpringMvcExceptionHandler {
+    isSpringMvcExceptionHandler(): boolean {
+        return true;
+    }
 
     hanlder(_req: any, res: any, errorInfo: errorInfo): void {
         console.log(errorInfo.error)

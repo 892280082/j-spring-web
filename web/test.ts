@@ -1,13 +1,27 @@
-import { spring } from 'j-spring';
-import { SpringMvcModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration } from '../src'
+import { Component, spring } from 'j-spring';
+import { SpringMvcModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration,SpringMvcExceptionHandler } from '../src'
+import { errorInfo } from '../src/springMvcExtends';
 import { IndexController } from "./controller/IndexController";
 import { StudentController,XiaoAiController } from './controller/StudentController'
+
+@Component
+class CustomSpringMvcExceptionHandler implements SpringMvcExceptionHandler {
+    isSpringMvcExceptionHandler(): boolean {
+        return true;
+    }
+    hanlder(req: any, res: any, errorInfo: errorInfo): void {
+       console.log(`this is diy error info`)
+       res.json(errorInfo.error)
+    }
+    
+}
 
 //springmvc 配置
 const springMvcConfig = [
     EjsViewConfigruation,
     ExpressMemorySessionConfiguration,
-    BodyParseConfiguration
+    BodyParseConfiguration,
+    CustomSpringMvcExceptionHandler
 ]
 
 //请求控制器

@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Anntation, assemble, BeanDefine, Clazz, getBeanDefineByClass, MethodDefine } from "j-spring";
 import path from "path";
 import { Controller, Get, Json,ResponseBody,ParamterParamType, PathVariable, Post, RequestMapping, RequestParam, ExpressMiddleWare, MappingParam, Param,SessionAttribute, ApiMiddleWare, MiddleWareParam, MiddleWare } from "./springMvcAnnotation";
@@ -14,7 +15,7 @@ type MethodRouterParm = {
     bean:any,
     bd:BeanDefine,
     md:MethodDefine
-    exceptionHandler:SpringMvcExceptionHandler
+    exceptionHandler:()=>SpringMvcExceptionHandler
 }
 
 
@@ -232,7 +233,7 @@ class MethodRouter {
         //代理的函数
         const proxyFunction = async (req:any,res:any) => {
 
-            const wrapHandler = (code:number,e:unknown) =>  exceptionHandler.hanlder(req,res,{code,error:e as string,sendType})
+            const wrapHandler = (code:number,e:unknown) =>  exceptionHandler().hanlder(req,res,{code,error:e as string,sendType})
 
             let params:paramContainer[] = [];
 
@@ -293,8 +294,9 @@ function hasTargetAnnotation(md:MethodDefine){
 export class ControllerBeanConfiguration implements ExpressLoad {
 
     methodRouter:MethodRouter[] = [];
+    
 
-    constructor(public bean:any,public bd:BeanDefine,public exceptionHandler:SpringMvcExceptionHandler){
+    constructor(public bean:any,public bd:BeanDefine,public exceptionHandler:()=>SpringMvcExceptionHandler){
 
         bd.methodList.filter(hasTargetAnnotation).forEach(md => {
 
@@ -306,6 +308,13 @@ export class ControllerBeanConfiguration implements ExpressLoad {
 
     //加载express app
     load(_app: any): void {
+        //注册所有路由
         this.methodRouter.forEach(m => m.loadExpressApp(_app))
+        //注册错误处理路由
+        _app.use((err:any,req:Request,res:any,next:Function) => {
+
+            this.exceptionHandler().hanlder(req,res,{code:req.statusCode || 500,sendType:'get',error:err},next)
+
+        })
     }
 }

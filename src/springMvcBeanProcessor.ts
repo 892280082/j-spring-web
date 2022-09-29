@@ -1,7 +1,7 @@
 import { Autowired, BeanDefine, BeanPostProcessor, Component } from "j-spring";
 import { Controller } from "./springMvcAnnotation";
 import {ControllerBeanConfiguration,paramInterceptor} from './springMvcRouterDelegate'
-import { ExpressLoad,isExpressConfiguration,SpringMvcExceptionHandler} from './springMvcExtends'
+import { ExpressLoad,isExpressConfiguration,SpringMvcExceptionHandler,isSpringMvcExceptionHandler} from './springMvcExtends'
 import { SpringMvcExceptionHandlerConfigration } from './springMvcConfiguration'
 import {isSpringMvcParamInteceptor} from './springMvcExtends'
 
@@ -56,8 +56,8 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 export class ControllerBeanProcessor implements BeanPostProcessor {
 
 
-    @Autowired<SpringMvcExceptionHandler>({clazz:SpringMvcExceptionHandlerConfigration})
-    exceptionHanlder:SpringMvcExceptionHandler;
+    @Autowired({type:isSpringMvcExceptionHandler,force:false})
+    exceptionHanlder:SpringMvcExceptionHandler = new SpringMvcExceptionHandlerConfigration();
 
     getSort(): number {
         return 100;
@@ -71,7 +71,7 @@ export class ControllerBeanProcessor implements BeanPostProcessor {
     postProcessAfterInitialization(bean: any, beanDefine: BeanDefine): Object{
 
         if(beanDefine.hasAnnotation(Controller)){
-                configureBeanList.add(new ControllerBeanConfiguration(bean,beanDefine,this.exceptionHanlder))
+                configureBeanList.add(new ControllerBeanConfiguration(bean,beanDefine,()=>this.exceptionHanlder))
         }
 
         return bean;

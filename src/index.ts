@@ -1,8 +1,7 @@
 import { ControllerBeanProcessor,ExpressAppEnhanceBeanProcessor,SpringParamterBeanPostProcessor } from "./springMvcBeanProcessor";
 import { SpringMvcStarter } from './springMvcContainer'
-import { SpringMvcExceptionHandlerConfigration } from './springMvcConfiguration'
 
-export { SpringMvcExceptionHandler,SpringMvcParamInteceptor,isSpringMvcParamInteceptor } from './springMvcExtends'
+export { SpringMvcExceptionHandler,SpringMvcParamInteceptor,isSpringMvcParamInteceptor,isSpringMvcExceptionHandler } from './springMvcExtends'
 export * from './springMvcConfiguration'
 export * from './springMvcAnnotation'
 
@@ -17,5 +16,4 @@ export const SpringMvcModule = [
     SpringMvcStarter,
     ExpressAppEnhanceBeanProcessor,
     ControllerBeanProcessor,
-    SpringParamterBeanPostProcessor,
-    SpringMvcExceptionHandlerConfigration];
+    SpringParamterBeanPostProcessor];
