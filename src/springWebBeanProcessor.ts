@@ -21,7 +21,7 @@ export const loadConfiguration = (app:any)=>{
  * 用于设置express的配置
  * 
  */
-@Component
+@Component()
 export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 
     getSort(): number {
@@ -52,7 +52,7 @@ export class ExpressAppEnhanceBeanProcessor implements BeanPostProcessor {
 /**
  * 用于设置express的路由
  */
- @Component
+ @Component()
 export class ControllerBeanProcessor implements BeanPostProcessor {
 
 
@@ -83,7 +83,7 @@ export class ControllerBeanProcessor implements BeanPostProcessor {
 /**
  * 用于设置express router中参数的处理器
 */
-@Component
+@Component()
 export class SpringParamterBeanPostProcessor implements BeanPostProcessor {
     getSort(): number {
         return 100;

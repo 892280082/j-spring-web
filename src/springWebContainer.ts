@@ -2,7 +2,7 @@ import express from "express";
 import { Component, Value,SpringStarter } from "j-spring";
 import {loadConfiguration} from './springWebBeanProcessor'
 
-@Component
+@Component()
 export class SpringWebStarter implements SpringStarter{
 
     @Value({path:'j-spring.port',type:Number,force:false})

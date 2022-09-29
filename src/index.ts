@@ -12,7 +12,7 @@ export * from './springWebAnnotation'
  * ExpressAppEnhanceBeanProcessor ExpressConfiguration的后置处理器
  * ControllerBeanProcessor controller的后置处理器
  */
-export const SpringWebModule = [
+export const springWebModule = [
     SpringWebStarter,
     ExpressAppEnhanceBeanProcessor,
     ControllerBeanProcessor,

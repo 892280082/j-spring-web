@@ -117,7 +117,7 @@ spring.bindModule([SpringWebBaseModule,controllerClassList])
 /**
  * ejs页面配置
  */
-@Component
+@Component()
 export class EjsViewConfigruation implements ExpressConfiguration {
 
     @Value({path:'root',type:String})
@@ -184,7 +184,7 @@ export class StudentController {
 ## 4.如何使用中间件
 ```js
 //定义中间件1
-@Component
+@Component()
 class XiaoAiMustBeExist implements ExpressMiddleWare {
     isExpressMidldleWare(): boolean {
         return true;
@@ -199,7 +199,7 @@ class XiaoAiMustBeExist implements ExpressMiddleWare {
 }
 
 //定义中间件2
-@Component
+@Component()
 class OtherMiddleWare implements ExpressMiddleWare {...}
 
 @Controller('xiaoai')

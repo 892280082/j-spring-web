@@ -9,7 +9,7 @@ import bodyParser from 'body-parser'
 /**
  * ejs页面配置
  */
-@Component
+@Component()
 export class EjsViewConfigruation implements ExpressConfiguration {
 
     @Value({path:'root',type:String})
@@ -30,7 +30,7 @@ export class EjsViewConfigruation implements ExpressConfiguration {
 }
 
 /** express 内存-session 仅适用于开发模式 */
-@Component
+@Component()
 export class ExpressMemorySessionConfiguration implements ExpressConfiguration {
 
     @Value({path:'express.session.secret',type:String,force:false})
@@ -51,7 +51,7 @@ export class ExpressMemorySessionConfiguration implements ExpressConfiguration {
     }
 }
 
-@Component
+@Component()
 export class BodyParseConfiguration implements ExpressConfiguration {
     load(app: any): void {
         // parse application/x-www-form-urlencoded

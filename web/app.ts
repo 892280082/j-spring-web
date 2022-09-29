@@ -1,10 +1,10 @@
 import { Component, spring } from 'j-spring';
-import { SpringWebModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration,SpringWebExceptionHandler } from '../src'
+import { springWebModule,EjsViewConfigruation,BodyParseConfiguration,ExpressMemorySessionConfiguration,SpringWebExceptionHandler } from '../src'
 import { errorInfo } from '../src/springWebExtends';
 import { IndexController } from "./controller/IndexController";
 import { StudentController,XiaoAiController } from './controller/StudentController'
 
-@Component
+@Component()
 class CustomSpringWebExceptionHandler implements SpringWebExceptionHandler {
     isSpringWebExceptionHandler(): boolean {
         return true;
@@ -32,7 +32,7 @@ const controllerClassList = [
 ]
 
 
-spring.bindModule([SpringWebModule,springWebConfig,controllerClassList]).loadConfig({'indexMsg':'j-spring','root':__dirname}).invokeStarter();
+spring.bindModule([springWebModule,springWebConfig,controllerClassList]).loadConfig({'indexMsg':'j-spring','root':__dirname}).invokeStarter();
 
 
 

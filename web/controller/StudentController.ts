@@ -41,7 +41,7 @@ export class StudentController {
 }
 
 
-@Component
+@Component()
 class XiaoAiMustBeExist implements ExpressMiddleWare {
     isExpressMidldleWare(): boolean {
         return true;
