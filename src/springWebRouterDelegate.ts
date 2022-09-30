@@ -20,9 +20,9 @@ type MethodRouterParm = {
 
 //query拦截器
 class RequestParamParamInteceptor implements SpringWebParamInteceptor<any> {
-    error(bean: any): void {
+    error(_bean: any): void {
     }
-    success(bean: any): void {
+    success(_bean: any): void {
     }
     isSpringWebParamInteceptor(): boolean {
         return true;
@@ -38,9 +38,9 @@ class RequestParamParamInteceptor implements SpringWebParamInteceptor<any> {
 
 //params拦截器
 class PathVariableParamInteceptor implements SpringWebParamInteceptor<any> {
-    error(bean: any): void {
+    error(_bean: any): void {
     }
-    success(bean: any): void {
+    success(_bean: any): void {
     }
     isSpringWebParamInteceptor(): boolean {
         return true;
@@ -55,10 +55,10 @@ class PathVariableParamInteceptor implements SpringWebParamInteceptor<any> {
 }
 
 class ParamInteceptor implements SpringWebParamInteceptor<any> {
-    error(bean: any): void {
+    error(_bean: any): void {
         throw new Error("Method not implemented.");
     }
-    success(bean: any): void {
+    success(_bean: any): void {
         throw new Error("Method not implemented.");
     }
     isSpringWebParamInteceptor(): boolean {
@@ -80,10 +80,10 @@ class ParamInteceptor implements SpringWebParamInteceptor<any> {
 }
 
 class SessionAttributeInteceptor implements SpringWebParamInteceptor<any> {
-    error(bean: any): void {
+    error(_bean: any): void {
         throw new Error("Method not implemented.");
     }
-    success(bean: any): void {
+    success(_bean: any): void {
         throw new Error("Method not implemented.");
     }
     isSpringWebParamInteceptor(): boolean {
