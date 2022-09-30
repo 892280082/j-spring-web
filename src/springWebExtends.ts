@@ -36,7 +36,7 @@ export interface SpringWebParamInteceptor<T> {
 
 export function isSpringWebParamInteceptor(bean:any){
     const t = bean as SpringWebParamInteceptor<any>;
-    return isFunction(t.getAnnotation) && 
+    return t && isFunction(t.getAnnotation) && 
             isFunction(t.getBean) && 
             isFunction(t.destoryBean) && 
             isFunction(t.isSpringWebParamInteceptor) 
@@ -62,5 +62,5 @@ export interface SpringWebExceptionHandler {
 
 export function isSpringWebExceptionHandler(bean:any):boolean{
     const t= bean as SpringWebExceptionHandler;
-    return isFunction(t.hanlder) && isFunction(t.isSpringWebExceptionHandler) && t.isSpringWebExceptionHandler();
+    return t && isFunction(t.hanlder) && isFunction(t.isSpringWebExceptionHandler) && t.isSpringWebExceptionHandler();
 }
