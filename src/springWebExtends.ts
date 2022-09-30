@@ -29,16 +29,19 @@ export interface SpringWebParamInteceptor<T> {
     //导出bean
     getBean(req:any,res:any,paramterAnnotation:Anntation):Promise<T> | T;
 
-    //访问结束时  如何销毁bean
-    destoryBean(bean:T):void;
+    //业务执行出错  如何销毁bean
+    error(bean:T):void;
 
+    //业务执行成功
+    success(bean:T):void;
 }
 
 export function isSpringWebParamInteceptor(bean:any){
     const t = bean as SpringWebParamInteceptor<any>;
     return t && isFunction(t.getAnnotation) && 
             isFunction(t.getBean) && 
-            isFunction(t.destoryBean) && 
+            isFunction(t.success) &&
+            isFunction(t.error) && 
             isFunction(t.isSpringWebParamInteceptor) 
             && t.isSpringWebParamInteceptor();
 }

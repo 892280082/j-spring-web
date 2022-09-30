@@ -20,6 +20,10 @@ type MethodRouterParm = {
 
 //query拦截器
 class RequestParamParamInteceptor implements SpringWebParamInteceptor<any> {
+    error(bean: any): void {
+    }
+    success(bean: any): void {
+    }
     isSpringWebParamInteceptor(): boolean {
         return true;
     }
@@ -30,12 +34,14 @@ class RequestParamParamInteceptor implements SpringWebParamInteceptor<any> {
         const {name} = pa.params as ParamterParamType;
         return req.query[name];
     }
-    destoryBean(_bean: any): void {
-    }
 }
 
 //params拦截器
 class PathVariableParamInteceptor implements SpringWebParamInteceptor<any> {
+    error(bean: any): void {
+    }
+    success(bean: any): void {
+    }
     isSpringWebParamInteceptor(): boolean {
         return true;
     }
@@ -46,11 +52,15 @@ class PathVariableParamInteceptor implements SpringWebParamInteceptor<any> {
         const {name} = pa.params as ParamterParamType;
         return req.params[name];
     }
-    destoryBean(_bean: any): void {
-    }
 }
 
 class ParamInteceptor implements SpringWebParamInteceptor<any> {
+    error(bean: any): void {
+        throw new Error("Method not implemented.");
+    }
+    success(bean: any): void {
+        throw new Error("Method not implemented.");
+    }
     isSpringWebParamInteceptor(): boolean {
         return true;
     }
@@ -67,12 +77,15 @@ class ParamInteceptor implements SpringWebParamInteceptor<any> {
                 throw `no support name:${name}`
         }
     }
-    destoryBean(_bean: any): void {
-    }
-    
 }
 
 class SessionAttributeInteceptor implements SpringWebParamInteceptor<any> {
+    error(bean: any): void {
+        throw new Error("Method not implemented.");
+    }
+    success(bean: any): void {
+        throw new Error("Method not implemented.");
+    }
     isSpringWebParamInteceptor(): boolean {
         return true;
     }
@@ -88,8 +101,6 @@ class SessionAttributeInteceptor implements SpringWebParamInteceptor<any> {
         if(v === void 0)
             throw `get session error!`
         return v;
-    }
-    destoryBean(_bean: any): void {
     }
     
 }
@@ -199,7 +210,7 @@ class MethodRouter {
                         bean = tempBean instanceof Promise ? await tempBean : tempBean;
                     }catch(e){
                         //如果获取异常 则执行销毁
-                        params.forEach(p => p.inteceptor?.destoryBean(p.bean));
+                        params.forEach(p => p.inteceptor?.error(p.bean));
                         throw e;
                     }
                     params[paramterDefine.index] = {bean,inteceptor:pi};
@@ -232,9 +243,14 @@ class MethodRouter {
         //代理的函数
         const proxyFunction = async (req:any,res:any) => {
 
-            const wrapHandler = (code:number,e:unknown) =>  exceptionHandler().hanlder(req,res,{code,error:e as string,sendType})
+            let params:paramContainer[] = [];//参数
+            let result:any;//业务计算结果
 
-            let params:paramContainer[] = [];
+            //统一错误处理
+            const wrapHandler = (code:number,e:unknown) => {
+                params.forEach(p => p.inteceptor?.error(p.bean));
+                exceptionHandler().hanlder(req,res,{code,error:e as string,sendType})
+            }
 
             //1.处理参数反射阶段
             try{
@@ -244,22 +260,20 @@ class MethodRouter {
             }
             
             try{
+
                 //2.业务处理阶段
                 const paramBeans = params.map(p => p.bean);
-                const result = await bean[md.name].apply(bean,paramBeans);
+                result = await bean[md.name].apply(bean,paramBeans);
 
                 //3.渲染阶段
-                const desctryParam = ()=> params.forEach(p => p.inteceptor?.destoryBean(p.bean));
                 switch(sendType){
                     case 'json':
                          res.json(result);
-                         desctryParam();
                          return;
                         break;
                     case 'html':
                         if(Array.isArray(result)){
                             res.render(result[0],result[1]||{})
-                            desctryParam();
                             return;
                         }else{
                             wrapHandler(500,'sendType:html only support array');
@@ -268,6 +282,9 @@ class MethodRouter {
                     default:
                         wrapHandler(500,`sendType error:${sendType}`);
                 }
+
+                params.forEach(p => p.inteceptor?.success(p.bean));
+
             }catch(e){
                 wrapHandler(500,e);
             }

@@ -11,10 +11,14 @@ export class SpringWebStarter implements SpringStarter{
     async doStart(): Promise<any> {
         const app = express();
         loadConfiguration(app);
-        app.listen(this.port, () => {
-            // tslint:disable-next-line:no-console
-            console.log( `server started at http://localhost:${ this.port }` );
+        const startWeb = ()=> new Promise( (ok,_err) => {
+            app.listen(this.port, () => {
+                // tslint:disable-next-line:no-console
+                console.log( `server started at http://localhost:${ this.port }` );
+                ok('ok')
+            });
         });
+        await startWeb();
     }
  
     isSpringStater(): boolean {
