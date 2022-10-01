@@ -269,12 +269,10 @@ class MethodRouter {
                 switch(sendType){
                     case 'json':
                          res.json(result);
-                         return;
                         break;
                     case 'html':
                         if(Array.isArray(result)){
                             res.render(result[0],result[1]||{})
-                            return;
                         }else{
                             wrapHandler(500,'sendType:html only support array');
                         }
